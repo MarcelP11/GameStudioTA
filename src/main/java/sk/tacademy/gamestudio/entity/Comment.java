@@ -1,9 +1,15 @@
 package sk.tacademy.gamestudio.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Formatter;
 
-public class Comment {
+public class Comment implements Serializable {
+    @Id
+    @GeneratedValue
+    private long ident;
     private String game;
     private String username;
     private String comment;
