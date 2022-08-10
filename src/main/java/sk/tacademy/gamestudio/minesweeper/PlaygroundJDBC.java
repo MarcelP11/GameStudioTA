@@ -9,7 +9,7 @@ import java.util.Date;
 
 
 
-public class TestJDBC {
+public class PlaygroundJDBC {
     public static void main(String[] args) throws Exception{
         ScoreService service = new ScoreServiceJDBC();
 

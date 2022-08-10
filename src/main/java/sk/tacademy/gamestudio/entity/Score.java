@@ -1,14 +1,23 @@
 package sk.tacademy.gamestudio.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Formatter;
-
+@Entity  //toto anotaciou davame informaciu
 public class Score implements Serializable {
+    @Id
+    @GeneratedValue
+    private long ident;  //primarny kluc pridame pomocou anotacie
     private String game;
     private String username;
     private int points;
     private Date playedOn;
+
+    public Score() {
+    }
 
     public Score(String game, String username, int points, Date playedOn) {
         this.game = game;

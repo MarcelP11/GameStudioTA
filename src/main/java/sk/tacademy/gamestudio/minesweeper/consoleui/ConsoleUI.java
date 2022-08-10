@@ -31,6 +31,10 @@ public class ConsoleUI implements UserInterface {
     private String userName = "";
     @Autowired
     private ScoreService scoreService;   //nechavam na spring co je prenho vhodne
+    @Autowired
+    private CommentService commentService;   //nechavam na spring co je prenho vhodne
+    @Autowired
+    private RatingService ratingService;   //nechavam na spring co je prenho vhodne
 
     /**
      * Input reader.
@@ -99,7 +103,7 @@ public class ConsoleUI implements UserInterface {
             }
         } while (true);
         Score player_score = new Score("Minesweeper", userName, gameScore, new Date());  //vytvorenie noveho objektu score
-        ScoreService scoreService = new ScoreServiceJDBC();  //vytvorenie noveho objektu ScoreServiceJDBC
+        //ScoreService scoreService = new ScoreServiceJDBC();  //vytvorenie noveho objektu ScoreServiceJDBC
         scoreService.addScore(player_score); //pridanie casu
         var scores = scoreService.getBestScores("Minesweeper");
         System.out.printf("\nTable of best players:\n%s\n\n", scores);  //vypis skore
@@ -238,7 +242,7 @@ public class ConsoleUI implements UserInterface {
         Matcher matcher = pattern.matcher(inputComment);
         if (matcher.matches()){
             Comment player_comment = new Comment("Minesweeper", userName, inputComment, new Date());
-            CommentService commentService = new CommentServiceJDBC();
+            //CommentService commentService = new CommentServiceJDBC();
             commentService.addComment(player_comment);
             var comments = commentService.getComments("Minesweeper");
             System.out.println(comments);
@@ -288,7 +292,7 @@ public class ConsoleUI implements UserInterface {
         Matcher matcher = pattern.matcher(inputRate);
         if (matcher.matches()){
             Rating player_rating = new Rating("Minesweeper", userName, Integer.parseInt(inputRate), new Date());
-            RatingService ratingService = new RatingServiceJDBC();
+            //RatingService ratingService = new RatingServiceJDBC();
             ratingService.setRating(player_rating);
             var averageRating = ratingService.getAverageRating("Minesweeper");
             System.out.println("Thank you for your rating. Average rating of game Minesweeper is: " + averageRating);
