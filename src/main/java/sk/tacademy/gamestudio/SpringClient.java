@@ -18,7 +18,7 @@ public class SpringClient {
     public CommandLineRunner runnerJPA(PlaygroundJPA console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }  //rovnaka metoda ale lisi sa menom a typom
-    //@Bean
+    // @Bean
     public CommandLineRunner runner(ConsoleUI console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }
@@ -34,12 +34,13 @@ public class SpringClient {
 
     @Bean
     public ScoreService scoreService(){
-        return new ScoreServiceJDBC();
+        return new ScoreServiceJPA();
     }  //vytvorime beany pre vsetky sluzby
     @Bean
     public CommentService commentService(){
-        return new CommentServiceJDBC();
+        return new CommentServiceJPA();
     }
+
     @Bean
     public RatingService ratingService(){
         return new RatingServiceJDBC();

@@ -20,11 +20,16 @@ public class CommentServiceJPA implements CommentService {
 
     @Override
     public List<Comment> getComments(String game) {
-        return s
+        return entityManager
+                .createQuery("select c from Comment c where c.game = :myGame order by c.commentedOn asc")
+                .setParameter("myGame",game)
+                .setMaxResults(5)
+                .getResultList();
     }
+
 
     @Override
     public void reset() {
-        entityManager.createNativeQuery("DELETE FROM comment");
+        entityManager.createNativeQuery("DELETE FROM comment").executeUpdate();
     }
 }
