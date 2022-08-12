@@ -43,7 +43,7 @@ public class SpringClient {
 
     @Bean
     public RatingService ratingService(){
-        return new RatingServiceJDBC();
+        return new RatingServiceJPA();
     }
 
     //spustame z triedy SpringClient. Inicializaciu v console UI sme zrusili resp zakomentovali a premenne dali na globalnu uroven
