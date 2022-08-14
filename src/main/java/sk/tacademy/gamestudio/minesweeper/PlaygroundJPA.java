@@ -27,7 +27,7 @@ public class PlaygroundJPA {  //v ramci kazdej jednej metody tvoria jednu transa
         }
     }
 
-
+;
 
     public void play() {
         System.out.println("Opening JPA playground");
@@ -50,6 +50,9 @@ public class PlaygroundJPA {  //v ramci kazdej jednej metody tvoria jednu transa
         }
         int group = Integer.parseInt(readLine());
         entityManager.persist(new Student(firstName, lastName, studyGroups.get(group)));
+        //kedze v premennej studyGroups mame ziskany pomocou createQuery a getResult list zoznam
+        //tak je to v stave managed a teda je to akoby stale otovrene cize cislo skupiny mozeme rovno
+        //pouzit pri vytvarani studenta
 
         List<Student> students = entityManager.createQuery("select s from Student s")
                 .getResultList();

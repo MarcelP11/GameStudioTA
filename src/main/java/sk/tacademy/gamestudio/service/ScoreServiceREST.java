@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ScoreServiceREST implements ScoreService{
-    //private String url="http://localhost:8080/api";
+    private String url="http://localhost:8080/api";
 
-    @Value("${remote.server.api}")  //do url sa automaticky vlozi hodnota parametra z aplication.properties
+    //@Value("${remote.server.api}")  //do url sa automaticky vlozi hodnota parametra z aplication.properties
     @Autowired
     private RestTemplate restTemplate;
 
