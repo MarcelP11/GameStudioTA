@@ -1,6 +1,10 @@
 package sk.tacademy.gamestudio.minesweeper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import sk.tacademy.gamestudio.entity.*;
+import sk.tacademy.gamestudio.service.CountryService;
+import sk.tacademy.gamestudio.service.OccupationService;
+import sk.tacademy.gamestudio.service.PlayerService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -18,6 +22,12 @@ public class PlaygroundJPA {  //v ramci kazdej jednej metody tvoria jednu transa
     @PersistenceContext
     private EntityManager entityManager;
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    @Autowired
+    private PlayerService playerService;
+    @Autowired
+    private OccupationService occupationService;
+    @Autowired
+    private CountryService countryService;
 
     private String readLine() {  //metoda pre vstup od pouzivatela
         try {
@@ -33,9 +43,9 @@ public class PlaygroundJPA {  //v ramci kazdej jednej metody tvoria jednu transa
         System.out.println("Opening JPA playground");
         //priklad uloha so zadanim od pouzivatela
 
-//        entityManager.persist(new StudyGroup("zakladna"));
-//        entityManager.persist(new StudyGroup("mierne pokrocila"));
-//        entityManager.persist(new StudyGroup("pokrocila"));
+        entityManager.persist(new StudyGroup("zakladna"));
+        entityManager.persist(new StudyGroup("mierne pokrocila"));
+        entityManager.persist(new StudyGroup("pokrocila"));
         List<StudyGroup> studyGroups = entityManager.createQuery("select g from StudyGroup g")
                 .getResultList();
 

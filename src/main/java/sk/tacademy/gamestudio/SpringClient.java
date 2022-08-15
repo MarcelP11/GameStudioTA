@@ -18,15 +18,15 @@ import sk.tacademy.gamestudio.service.*;
 @ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "sk.tacademy.gamestudio.server.*"))
 public class SpringClient {
     public static void main(String[] args) {
-     //   SpringApplication.run(SpringClient.class);   //povieme ze ideme spustat nieco cez Spring Framework teda triedu SpringClient
+        SpringApplication.run(SpringClient.class);   //povieme ze ideme spustat nieco cez Spring Framework teda triedu SpringClient
 
-   new SpringApplicationBuilder(SpringClient.class).web(WebApplicationType.NONE).run(args);   //aby nespustal so spustenim hry aj server
+   //new SpringApplicationBuilder(SpringClient.class).web(WebApplicationType.NONE).run(args);   //aby nespustal so spustenim hry aj server
     }
     //@Bean
     public CommandLineRunner runnerJPA(PlaygroundJPA console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }  //rovnaka metoda ale lisi sa menom a typom
-     @Bean
+    @Bean
     public CommandLineRunner runner(ConsoleUI console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }
@@ -42,8 +42,8 @@ public class SpringClient {
 
     @Bean
     public ScoreService scoreService(){
-       // return new ScoreServiceJPA();
-        return new ScoreServiceREST();
+        return new ScoreServiceJPA();
+       // return new ScoreServiceREST();
     }  //vytvorime beany pre vsetky sluzby
 
     @Bean
@@ -66,6 +66,18 @@ public class SpringClient {
     @Bean
     public StudentGroupServiceJPA studentGroupServiceJPA(){
         return new StudentGroupServiceJPA();
+    }
+    @Bean
+    public PlayerService playerService(){
+        return new PlayerServiceJPA();
+    }
+    @Bean
+    public OccupationService occupationService(){
+        return new OccupationServiceJPA();
+    }
+    @Bean
+    public CountryService countryService(){
+        return new CountryServiceJPA();
     }
 
     //spustame z triedy SpringClient. Inicializaciu v console UI sme zrusili resp zakomentovali a premenne dali na globalnu uroven

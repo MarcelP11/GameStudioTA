@@ -4,13 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import sk.tacademy.gamestudio.entity.Comment;
-import sk.tacademy.gamestudio.entity.Rating;
-import sk.tacademy.gamestudio.entity.Score;
+import sk.tacademy.gamestudio.entity.*;
 import sk.tacademy.gamestudio.minesweeper.UserInterface;
 import sk.tacademy.gamestudio.minesweeper.core.*;
 import sk.tacademy.gamestudio.service.*;
@@ -29,13 +28,19 @@ public class ConsoleUI implements UserInterface {
     name of player
      */
     private String userName = "";
+    private String fullName="";
     @Autowired
     private ScoreService scoreService;   //nechavam na spring co je prenho vhodne
     @Autowired
     private CommentService commentService;   //nechavam na spring co je prenho vhodne
     @Autowired
     private RatingService ratingService;   //nechavam na spring co je prenho vhodne
-
+    @Autowired
+    private PlayerService playerService;
+    @Autowired
+    private OccupationService occupationService;
+    @Autowired
+    private CountryService countryService;
     /**
      * Input reader.
      */
@@ -48,6 +53,7 @@ public class ConsoleUI implements UserInterface {
      */
 
     private Settings setting;
+
     private String readLine() {
         try {
             return input.readLine();
@@ -63,11 +69,28 @@ public class ConsoleUI implements UserInterface {
      */
     @Override
     public void newGameStarted(Field field) {
+        //naplnenie tabuliek
+
+//        occupationService.addOccupation(new Occupation("ziak"));
+//        occupationService.addOccupation(new Occupation("student"));
+//        occupationService.addOccupation(new Occupation("zamestnanec"));
+//        occupationService.addOccupation(new Occupation("zivnostnik"));
+//        occupationService.addOccupation(new Occupation("nezamestnany"));
+//        occupationService.addOccupation(new Occupation("dochodca"));
+//        occupationService.addOccupation(new Occupation("invalid"));
+//        countryService.addCountry(new Country("Slovensko"));
+//        countryService.addCountry(new Country("Cesko"));
+//        countryService.addCountry(new Country("Madarsko"));
+
+
         int gameScore = 0;
         this.field = field;
         processInputUsername();
+
 //     System.out.println("Please enter your name:");
 //        userName = readLine();
+
+        checkUserInDatabase(userName);
         System.out.println("Select difficult level: 1 - BEGINNER, 2 - INTERMEDIATE, 3 - EXPERT");
         String level = readLine();
         if (level != null && !level.equals("")) {
@@ -102,7 +125,7 @@ public class ConsoleUI implements UserInterface {
                 break;
             }
         } while (true);
-        Score player_score = new Score("Minesweeper", userName, gameScore, new Date());  //vytvorenie noveho objektu score
+        Score player_score = new Score("Minesweeper", fullName, gameScore, new Date());  //vytvorenie noveho objektu score
         //ScoreService scoreService = new ScoreServiceJDBC();  //vytvorenie noveho objektu ScoreServiceJDBC
         scoreService.addScore(player_score); //pridanie casu
         var scores = scoreService.getBestScores("Minesweeper");
@@ -237,16 +260,16 @@ public class ConsoleUI implements UserInterface {
         }
     }
 
-    public void handleInputComment(String inputComment) throws WrongFormatException{
+    public void handleInputComment(String inputComment) throws WrongFormatException {
         Pattern pattern = Pattern.compile(".{1,64}");
         Matcher matcher = pattern.matcher(inputComment);
-        if (matcher.matches()){
-            Comment player_comment = new Comment("Minesweeper", userName, inputComment, new Date());
+        if (matcher.matches()) {
+            Comment player_comment = new Comment("Minesweeper", fullName, inputComment, new Date());
             //CommentService commentService = new CommentServiceJDBC();
             commentService.addComment(player_comment);
             var comments = commentService.getComments("Minesweeper");
             System.out.println(comments);
-        }else{
+        } else {
             throw new WrongFormatException("Wrong input. Please insert at least one character. Maximum length of comment is 64 characters.");
         }
     }
@@ -264,19 +287,19 @@ public class ConsoleUI implements UserInterface {
         }
     }
 
-    public void handleInputUsername(String inputUsername) throws WrongFormatException{
+    public void handleInputUsername(String inputUsername) throws WrongFormatException {
         Pattern pattern2 = Pattern.compile(".{1,64}");
         Matcher matcher2 = pattern2.matcher(inputUsername);
         if (matcher2.matches()) {
-            userName=inputUsername;
-        }else{
+            userName = inputUsername;
+        } else {
             throw new WrongFormatException("Wrong input. Please insert at least one character. Maximum length of username is 64 characters.");
         }
     }
 
     private void processInputUsername() {
         // throw new UnsupportedOperationException("Method processInput not yet implemented");
-        System.out.println("Please enter your name:");
+        System.out.println("Please enter your username:");
         String usernameToCheck = readLine();
         try {
             handleInputUsername(usernameToCheck);   //zavolam funkciu ktora sa skusa a v ktorej je novy objekt vynimky pri if kde by mala byt chyba
@@ -287,16 +310,16 @@ public class ConsoleUI implements UserInterface {
         }
     }
 
-    public void handleInputRate(String inputRate) throws WrongFormatException{
+    public void handleInputRate(String inputRate) throws WrongFormatException {
         Pattern pattern = Pattern.compile("[1,2,3,4,5]{1}");
         Matcher matcher = pattern.matcher(inputRate);
-        if (matcher.matches()){
-            Rating player_rating = new Rating("Minesweeper", userName, Integer.parseInt(inputRate), new Date());
+        if (matcher.matches()) {
+            Rating player_rating = new Rating("Minesweeper", fullName, Integer.parseInt(inputRate), new Date());
             //RatingService ratingService = new RatingServiceJDBC();
             ratingService.setRating(player_rating);
             var averageRating = ratingService.getAverageRating("Minesweeper");
             System.out.println("Thank you for your rating. Average rating of game Minesweeper is: " + averageRating);
-        }else{
+        } else {
             throw new WrongFormatException("Wrong input. Please rate from 1 to 5.");
         }
     }
@@ -315,9 +338,69 @@ public class ConsoleUI implements UserInterface {
         }
     }
 
+    private void checkUserInDatabase(String usernametoCheck) {
+        try {
+            List<Player> players = playerService.getPlayersByUserName(usernametoCheck);
+            int noOfFoundPlayers = players.size();
+            if (noOfFoundPlayers == 0) {
+                System.out.println("Username " + usernametoCheck + " not found in database. Please specify details for registration");
+                addingUsertoDatabase(usernametoCheck);
+            } else {
+                System.out.println("Please select who you are - type number:");
+                for (int i = 0; i < players.size(); i++) {
+                    System.out.printf("%-5d%s\n", i, players.get(i));
+                }
+                int plrNo = Integer.parseInt(readLine());
+                fullName=players.get(plrNo).getFullName();
+                System.out.println("Welcome back "+fullName);
+            }
+        }catch (Exception e){
+            System.out.println("Some problems - "+e.getMessage());
+        }
+
+    }
+
+    private void addingUsertoDatabase(String username) {
+        try {
+            System.out.println("Type your full name:");
+            String inputFullName = readLine();
+            System.out.println("Evaluate yourself from 1 to 10:");
+            int inputEvaluation = Integer.parseInt(readLine());
+            System.out.println("Choose number of your occupation:");
+            List<Occupation> occupations = occupationService.getOccupations();
+            for (int i = 0; i < occupations.size(); i++) {
+                System.out.printf("%-5d%s\n", i, occupations.get(i));
+            }
+            int idOccupation = Integer.parseInt(readLine());
+            System.out.println("Choose number of your country. If you want to add country please type X:");
+            List<Country> countries = countryService.getCountries();
+            for (int i = 0; i < countries.size(); i++) {
+                System.out.printf("%-5d%s\n", i, countries.get(i));
+            }
+            String inputCountry=readLine();
+            if (inputCountry.toLowerCase().equals("x")){
+                System.out.println("Enter name of your country:");
+                String newCountry = readLine();
+                countryService.addCountry(new Country(newCountry));
+                System.out.println("Choose number of your country");
+                for (int i = 0; i < countries.size(); i++) {
+                    System.out.printf("%-5d%s\n", i, countries.get(i));
+                }
+                inputCountry = readLine();
+            }
+
+            playerService.addPlayer(new Player(username, inputFullName, inputEvaluation, countries.get(Integer.parseInt(inputCountry)), occupations.get(idOccupation)));
+            System.out.println("Player with full name "+inputFullName+ " has been added to the database");
+            fullName=inputFullName;
+        }catch (Exception e){
+            System.out.println("Some problems - "+e.getMessage());
+        }
+
+    }
+
     @Override
-    public void play(){
-         setting=Settings.load();//premenna setting bude mat navratovu hodnotu metody load v triede Settings
+    public void play() {
+        setting = Settings.load();//premenna setting bude mat navratovu hodnotu metody load v triede Settings
 
 
         //setLevel();  //spusti sa metoda pre nastavenie levelu od pouzivatela, presunute do consoleUI
