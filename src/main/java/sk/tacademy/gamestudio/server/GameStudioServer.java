@@ -41,6 +41,18 @@ public class GameStudioServer {
     public StudentGroupServiceJPA studentGroupServiceJPA(){
         return new StudentGroupServiceJPA();
     }
+    @Bean
+    public CountryService countryService(){
+        return new CountryServiceJPA();
+    }
+    @Bean
+    public OccupationService occupationService(){
+        return new OccupationServiceJPA();
+    }
+    @Bean
+    public PlayerService playerService(){
+        return new PlayerServiceJPA();
+    }
 
     //spustame z triedy SpringClient. Inicializaciu v console UI sme zrusili resp zakomentovali a premenne dali na globalnu uroven
 }
