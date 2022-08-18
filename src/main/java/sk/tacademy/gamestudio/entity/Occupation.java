@@ -24,6 +24,10 @@ public class Occupation {
         this.occupation = occupation;
     }
 
+    public long getIdent() {
+        return ident;
+    }
+
     public String getOccupation() {
         return occupation;
     }

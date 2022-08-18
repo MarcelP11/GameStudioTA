@@ -42,7 +42,7 @@ public class SpringClient {
 
     @Bean
     public ScoreService scoreService(){
-        //return new ScoreServiceJPA();
+//        return new ScoreServiceJPA();
         return new ScoreServiceREST();
     }  //vytvorime beany pre vsetky sluzby
 
@@ -52,7 +52,7 @@ public class SpringClient {
     }
     @Bean
     public CommentService commentService(){
-        //return new CommentServiceJPA();
+//        return new CommentServiceJPA();
         return new CommentServiceREST();
     }
 
@@ -70,17 +70,17 @@ public class SpringClient {
     }
     @Bean
     public PlayerService playerService(){
-        //return new PlayerServiceJPA();
+//        return new PlayerServiceJPA();
         return new PlayerServiceREST();
     }
     @Bean
     public OccupationService occupationService(){
-       // return new OccupationServiceJPA();
+//        return new OccupationServiceJPA();
         return new OccupationServiceREST();
     }
     @Bean
     public CountryService countryService(){
-        //return new CountryServiceJPA();
+//        return new CountryServiceJPA();
         return new CountryServiceREST();
 
     }

@@ -27,6 +27,10 @@ public class Country {
         return country;
     }
 
+    public long getIdent() {
+        return ident;
+    }
+
     public void setCountry(String country) {
         this.country = country;
     }
