@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
+import sk.tacademy.gamestudio.entity.Score;
 import sk.tacademy.gamestudio.minesweeper.core.Clue;
 import sk.tacademy.gamestudio.minesweeper.core.Field;
 import sk.tacademy.gamestudio.minesweeper.core.GameState;
@@ -131,6 +132,14 @@ public class MinesweeperController {
             default:
                 throw new RuntimeException("Unexpected tile state");
         }
+    }
+public String getGameStatus(){
+       String result="";
+        if(field.getState()==GameState.SOLVED){
+            scoreService.addScore(new Score("Minesweeper", "Anonym", field.getScore(), new Date()));
+            result ="Your score is:"+ String.valueOf(field.getScore());
+        }
+        return result;
     }
 
     //vytvorime metodu ktora pripravi model

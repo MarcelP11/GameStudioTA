@@ -49,17 +49,17 @@ label {
 table.scores {
     width: 100%;
     border: black 2px;
+    border-radius:5px;
 }
 
 table.scores th {
     font-weight: bold;
     color: #FFFFFF;
-    background-color: dimgray;
-
+    background-color: black;
 }
 
 table.scores tr:nth-child(even) {
-    background-color: lightgray
+    background-color: lightgray;
 }
 
 table.scores tr:nth-child(odd) {

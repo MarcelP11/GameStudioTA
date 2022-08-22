@@ -85,7 +85,9 @@ public class Field {
             tile.setState(Tile.State.OPEN);
             //riesime odkryvanie
            // if (tile instanceof )
-            //doplnit kod
+            if(tile instanceof Clue && ((Clue)tile).getValue()==0){
+                getOpenAdjacentTiles(row,column);
+            }
             if (tile instanceof Mine) {
                 setState(GameState.FAILED);
                 return;
@@ -196,7 +198,22 @@ public class Field {
 
         return count;
     }
-public Tile[][] getTiles(){
+//odkryvanie susednych min
+    private void getOpenAdjacentTiles(int row, int column) {
+        for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
+            int actRow = row + rowOffset;
+            if (actRow >= 0 && actRow < rowCount) {
+                for (int columnOffset = -1; columnOffset <= 1; columnOffset++) {
+                    int actColumn = column + columnOffset;
+                    if (actColumn >= 0 && actColumn < columnCount) {
+                        openTile(actRow, actColumn);
+                    }
+                }
+            }
+        }
+    }
+
+    public Tile[][] getTiles(){
         return tiles;  //vrati dvojrozmerne pole tile
 }
 
