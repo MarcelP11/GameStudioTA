@@ -196,7 +196,9 @@ public class Field {
 
         return count;
     }
-
+public Tile[][] getTiles(){
+        return tiles;  //vrati dvojrozmerne pole tile
+}
 
     public int getRowCount() {  //getter pre RowCount
         return rowCount;

@@ -1,13 +1,18 @@
 package sk.tacademy.gamestudio.server.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import sk.tacademy.gamestudio.minesweeper.core.Clue;
 import sk.tacademy.gamestudio.minesweeper.core.Field;
+import sk.tacademy.gamestudio.minesweeper.core.GameState;
 import sk.tacademy.gamestudio.minesweeper.core.Tile;
+import sk.tacademy.gamestudio.service.ScoreService;
+import sk.tacademy.gamestudio.service.ScoreServiceJPA;
 
 import java.util.Date;
 
@@ -15,7 +20,7 @@ import java.util.Date;
 //minewseeper controller prebera ulohu consoleUI
 
 @Controller
-@RequestMapping("/minesweeper")
+@RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
 public class MinesweeperController {
     private Field field = new Field(9, 9, 10);  //vytvorime pole
@@ -23,9 +28,14 @@ public class MinesweeperController {
 
     private boolean marking=false; //premenna ci oznacujem alebo otvaram
 
+    @Autowired
+    private ScoreService scoreService;
+
+    private GameState gamestate;
+
     @RequestMapping
     //aka sablona sa ma spracovat ked sa spusti controller minewseerper
-    public String minesweeper(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column) {   //aby parametre boli povinne
+    public String minesweeper(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column, Model model) {   //aby parametre boli povinne
         if(row!=null && column !=null){
 
             if(marking){
@@ -35,18 +45,22 @@ public class MinesweeperController {
             }
 
         }
+
+        prepareModel(model);
         return "minesweeper";  //vrati sablonu v html subore
     }
 
     @RequestMapping("/mark")
-    public String changeMarking(){
+    public String changeMarking(Model model){
         marking = !marking;
+        prepareModel(model);
         return "minesweeper";
     }
 
     @RequestMapping("/new")
-    public String newGame(){
+    public String newGame(Model model){
         field=new Field(9,9,10);
+        prepareModel(model);
         return "minesweeper";
     }
 
@@ -64,16 +78,16 @@ public class MinesweeperController {
         int colCount = field.getColumnCount();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("<table class='minefield>\n");
+        sb.append("<table class='minefield'>\n");
         for (int row = 0; row < rowCount; row++) {
             sb.append("<tr>\n");
             for (int col = 0; col < colCount; col++) {
                 Tile tile =field.getTile(row,col);
 
                 sb.append("<td class='"+getTileClass(tile)+"'> ");
-                sb.append("<a href='/minesweeper/?row="+row+"&column="+col+"'>");
+                sb.append("<a href='/minesweeper?row="+row+"&column="+col+"'>");
 
-                sb.append(getTileText(tile));
+                sb.append("<span>" + getTileText(tile) + "</span>");
                 sb.append("</a>\n");
                 sb.append("</td>\n");
             }
@@ -85,7 +99,8 @@ public class MinesweeperController {
         return sb.toString();
     }
 
-    private String getTileText(Tile tile) {
+
+    public String getTileText(Tile tile) {
         switch (tile.getState()) {
             case CLOSED:
                 return "-";
@@ -102,7 +117,7 @@ public class MinesweeperController {
         }
     }
 
-    private String getTileClass(Tile tile) {
+    public String getTileClass(Tile tile) {
         switch (tile.getState()) {
             case OPEN:
                 if (tile instanceof Clue)
@@ -116,6 +131,14 @@ public class MinesweeperController {
             default:
                 throw new RuntimeException("Unexpected tile state");
         }
+    }
+
+    //vytvorime metodu ktora pripravi model
+    private void prepareModel(Model model){
+        model.addAttribute("message","Sprava z modelu");
+        model.addAttribute("minesweeperField", field.getTiles());
+        model.addAttribute("bestScores", scoreService.getBestScores("Minesweeper"));
+        model.addAttribute("gameStatus", field.getState());
     }
 }
 

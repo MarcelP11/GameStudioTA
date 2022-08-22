@@ -30,7 +30,43 @@
 
 </div>
 
-<div th:utext="${@minesweeperController.fieldAsHtml}"></div>
+<!--<div th:utext="${@minesweeperController.fieldAsHtml}"></div>-->
+
+<div>
+    <h2>Status of the game:<span th:text="${gameStatus}"></span></h2>
+</div>
+
+<div>
+    <table class='minefield'>
+        <tr th:each="row: ${minesweeperField}">
+            <td th:each="tile: ${row}"
+                th:attr="class=${@minesweeperController.getTileClass(tile)}">
+                <a th:attr="href='/minesweeper/?row='+${rowStat.index}+'&column='+${tileStat.index}">
+                    <span th:text="${@minesweeperController.getTileText(tile)}"></span>
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <h1>Table of best scores</h1>
+    <table style="border: 1px solid;">
+        <tr style="border: 1px solid;">
+            <th>Username</th>
+            <th>Points</th>
+            <th>Date</th>
+        </tr>
+        <tr style="border: 1px solid;" th:each="score: ${bestScores}">
+            <td th:text="${score.getUsername()}"></td>
+            <td th:text="${score.getPoints()}"></td>
+            <td th:text="${score.getPlayedOn()}"></td>
+        </tr>
+    </table>
+<br>
+</div>
+
+<aside th:text="${message}"></aside>
 
 
 <div th:text="${1+2}"></div>
