@@ -32,6 +32,9 @@ public class MinesweeperController {
     @Autowired
     private ScoreService scoreService;
 
+    @Autowired
+    private UserController userController;
+
     private GameState gamestate;
 
     @RequestMapping
@@ -136,7 +139,11 @@ public class MinesweeperController {
 public String getGameStatus(){
        String result="";
         if(field.getState()==GameState.SOLVED){
-            scoreService.addScore(new Score("Minesweeper", "Anonym", field.getScore(), new Date()));
+            if(userController.isLogged()) {
+                scoreService.addScore(new Score("Minesweeper", userController.getLoggedUser(), field.getScore(), new Date()));  //skore sa zapise do databazy iba ak je prihlasny pouzivatel
+            //pridavanie hraca do databazy pridat do samostatnej metody pretoze toto je getter a nemal by robit dalsie ine veci
+
+            }
             result ="Your score is:"+ String.valueOf(field.getScore());
         }
         return result;
