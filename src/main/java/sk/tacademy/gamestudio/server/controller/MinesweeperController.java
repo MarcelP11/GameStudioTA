@@ -12,6 +12,8 @@ import sk.tacademy.gamestudio.minesweeper.core.Clue;
 import sk.tacademy.gamestudio.minesweeper.core.Field;
 import sk.tacademy.gamestudio.minesweeper.core.GameState;
 import sk.tacademy.gamestudio.minesweeper.core.Tile;
+import sk.tacademy.gamestudio.service.CommentService;
+import sk.tacademy.gamestudio.service.RatingService;
 import sk.tacademy.gamestudio.service.ScoreService;
 import sk.tacademy.gamestudio.service.ScoreServiceJPA;
 
@@ -24,13 +26,21 @@ import java.util.Date;
 @RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
 public class MinesweeperController {
-    private Field field = new Field(9, 9, 10);  //vytvorime pole
+    private Field field = new Field(9, 9, 2);  //vytvorime pole
     //zapismee metodu ktora vypise/vygeneruje hracie pole
 
     private boolean marking=false; //premenna ci oznacujem alebo otvaram
 
+    private boolean isPlaying = true;
+
     @Autowired
     private ScoreService scoreService;
+
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private RatingService ratingService;
 
     @Autowired
     private UserController userController;
@@ -41,13 +51,22 @@ public class MinesweeperController {
     //aka sablona sa ma spracovat ked sa spusti controller minewseerper
     public String minesweeper(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column, Model model) {   //aby parametre boli povinne
         if(row!=null && column !=null){
-
-            if(marking){
-                field.markTile(row,column);  //updatne vnutorny stav
-            }else{
-                field.openTile(row,column);
+            if(this.field.getState()==GameState.PLAYING){  //osetrenie  - robi sa iba ak je stav PLAYING
+                if(marking){
+                    field.markTile(row,column);  //updatne vnutorny stav
+                }else{
+                    field.openTile(row,column);
+                }
             }
+        }
 
+        if(this.field.getState()!=GameState.PLAYING && this.isPlaying==true){  //ak je hra vyriesenia alebo fail tak sa zmeni stav isPlaying
+            this.isPlaying=false;
+        }
+
+        if(userController.isLogged()){  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
+            Score newScore = new Score("Minesweeper", userController.getLoggedUser(),this.field.getScore(),new Date());
+            scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
         }
 
         prepareModel(model);
@@ -136,14 +155,10 @@ public class MinesweeperController {
                 throw new RuntimeException("Unexpected tile state");
         }
     }
-public String getGameStatus(){
+public String getGameScore(){
        String result="";
         if(field.getState()==GameState.SOLVED){
-            if(userController.isLogged()) {
-                scoreService.addScore(new Score("Minesweeper", userController.getLoggedUser(), field.getScore(), new Date()));  //skore sa zapise do databazy iba ak je prihlasny pouzivatel
             //pridavanie hraca do databazy pridat do samostatnej metody pretoze toto je getter a nemal by robit dalsie ine veci
-
-            }
             result ="Your score is:"+ String.valueOf(field.getScore());
         }
         return result;
@@ -155,6 +170,8 @@ public String getGameStatus(){
         model.addAttribute("minesweeperField", field.getTiles());
         model.addAttribute("bestScores", scoreService.getBestScores("Minesweeper"));
         model.addAttribute("gameStatus", field.getState());
+        model.addAttribute("lastComments", commentService.getComments("Minesweeper"));
+        model.addAttribute("avgRating", ratingService.getAverageRating("Minesweeper"));
     }
 }
 

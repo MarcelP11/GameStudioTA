@@ -39,8 +39,9 @@ a:link:hover, a:visited:hover {
 label {
     vertical-align: top;
     display: inline-block; /*instead of inline (default)*/
-    min-width: 5em;
+    min-width: 4em;
 }
+
 
 
 

@@ -42,7 +42,7 @@
 <div>
     <h2>Status of the game:<span th:text="${gameStatus}"></span></h2>
 <!--    <h3 th:if="${gameStatus==SOLVED}">WINNER</h3>-->
-    <h3 th:text="${@minesweeperController.getGameStatus()}"></h3>
+    <h3 th:text="${@minesweeperController.getGameScore()}"></h3>
 </div>
 
 <div>
@@ -53,26 +53,75 @@
                 <a th:attr="href='/minesweeper/?row='+${rowStat.index}+'&column='+${tileStat.index}">
                     <span th:text="${@minesweeperController.getTileText(tile)}"></span>
                 </a>
+
             </td>
         </tr>
     </table>
-</div>
+    <br>
 
+</div>
+    <form action="/comment" method="post">
+        <label for="comment"> Please insert comment: </label> <input type="textarea" name="commentIn" id="comment" required/> <br>
+        <button type="submit">Send comment</button>
+    </form>
+    <br>
 <div>
+
+</div>
+    <form action="/rating" method="post">
+        <p>Please rate this game:</p>
+        <div>
+        <input type="radio" name="rateIn" id="rating-1" value="1" />
+            <label for="rating-1" >1</label>
+        <input type="radio" name="rateIn" id="rating-2" value="2" />
+            <label for="rating-2" >2</label>
+        <input type="radio" name="rateIn" id="rating-3" value="3"  checked />
+            <label for="rating-3" >3</label>
+        <input type="radio" name="rateIn" id="rating-4" value="4" />
+            <label for="rating-4" >4</label>
+        <input type="radio" name="rateIn" id="rating-5" value="5" />
+            <label for="rating-5">5</label>
+        </div>
+        <br>
+        <button type="submit">Send rating</button>
+    </form>
+    <br>
+    <div>
+
     <h1>Table of best scores</h1>
     <table class="scores" style="border: 1px solid;">
         <tr>
+            <th>Rank</th>
             <th>Username</th>
             <th>Points</th>
             <th>Date</th>
         </tr>
         <tr style="border: 1px solid;" th:each="score: ${bestScores}">
+            <td th:text="${scoreStat.index+1}"></td>
+            <!-- scoreStat je na poradie-->
             <td th:text="${score.getUsername()}"></td>
             <td th:text="${score.getPoints()}"></td>
             <td th:text="${score.getPlayedOn()}"></td>
         </tr>
     </table>
 <br>
+    <br>
+    <h1>Comments</h1>
+    <table class="scores" style="border: 1px solid;">
+        <tr>
+            <th>Username</th>
+            <th>Comment</th>
+            <th>Date</th>
+        </tr>
+        <tr style="border: 1px solid;" th:each="comment: ${lastComments}">
+            <td th:text="${comment.getUsername()}"></td>
+            <td th:text="${comment.getComment()}"></td>
+            <td th:text="${comment.getCommentedOn()}"></td>
+        </tr>
+    </table>
+    <br>
+    <br>
+    <h2>Average rating of this game is: <span style="color:blue" th:text="${avgRating}"></span></h2>
 </div>
 
 <aside th:text="${message}"></aside>
