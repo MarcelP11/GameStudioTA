@@ -12,8 +12,8 @@ import sk.tacademy.gamestudio.minesweeper.PlaygroundJPA;
 import sk.tacademy.gamestudio.minesweeper.consoleui.ConsoleUI;
 import sk.tacademy.gamestudio.service.*;
 
-@SpringBootApplication
-@EntityScan(basePackages = "sk.tacademy.gamestudio.entity")
+@SpringBootApplication   //obsahuje v sebe controller ktora hovori ze tu na budu beany
+@EntityScan(basePackages = "sk.tacademy.gamestudio.entity")  //pretoze balik entity je na inej urovni tak sa dala tato anotacia EntityScan
 public class GameStudioServer {
     public static void main(String[] args) {
         SpringApplication.run(GameStudioServer.class);   //povieme ze ideme spustat nieco cez Spring Framework teda triedu SpringClient

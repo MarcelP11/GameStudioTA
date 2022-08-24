@@ -36,6 +36,7 @@ public class RatingServiceJPA implements RatingService {
                 .createQuery("select avg(r.rating) from Rating r where r.game = :myGame")
                 .setParameter("myGame", name)
                 .getSingleResult();
+        //osetrit null
     }
 
     @Override

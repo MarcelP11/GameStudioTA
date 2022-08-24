@@ -26,7 +26,7 @@ import java.util.Date;
 @RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
 public class MinesweeperController {
-    private Field field = new Field(9, 9, 2);  //vytvorime pole
+    private Field field = new Field(9, 9, 10);  //vytvorime pole
     //zapismee metodu ktora vypise/vygeneruje hracie pole
 
     private boolean marking=false; //premenna ci oznacujem alebo otvaram
@@ -62,12 +62,14 @@ public class MinesweeperController {
 
         if(this.field.getState()!=GameState.PLAYING && this.isPlaying==true){  //ak je hra vyriesenia alebo fail tak sa zmeni stav isPlaying
             this.isPlaying=false;
+
+            if(userController.isLogged()){  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
+                Score newScore = new Score("Minesweeper", userController.getLoggedUser(),this.field.getScore(),new Date());
+                scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
+            }
+
         }
 
-        if(userController.isLogged()){  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
-            Score newScore = new Score("Minesweeper", userController.getLoggedUser(),this.field.getScore(),new Date());
-            scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
-        }
 
         prepareModel(model);
         return "minesweeper";  //vrati sablonu v html subore
