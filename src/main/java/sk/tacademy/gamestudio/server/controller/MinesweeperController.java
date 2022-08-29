@@ -25,7 +25,7 @@ import java.util.Date;
 @Controller
 @RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
-public class MinesweeperController {
+public class MinesweeperController {   //controller na ovladanie celej hry
     private Field field = new Field(9, 9, 10);  //vytvorime pole
     //zapismee metodu ktora vypise/vygeneruje hracie pole
 

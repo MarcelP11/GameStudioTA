@@ -111,7 +111,7 @@ public class Field {
         Tile tile = tiles[row][column];
         if (tile.getState() == Tile.State.CLOSED) {
             tile.setState(Tile.State.MARKED);
-        } else if (tile.getState() == Tile.State.CLOSED) {
+        } else if (tile.getState() == Tile.State.MARKED) {
             tile.setState(Tile.State.CLOSED);
         }
     }

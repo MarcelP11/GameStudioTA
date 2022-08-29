@@ -50,7 +50,7 @@
         <tr th:each="row: ${minesweeperField}">
             <td th:each="tile: ${row}"
                 th:attr="class=${@minesweeperController.getTileClass(tile)}">
-                <a th:attr="href='/minesweeper/?row='+${rowStat.index}+'&column='+${tileStat.index}">
+                <a th:attr="href='/minesweeper?row='+${rowStat.index}+'&column='+${tileStat.index}">
                     <span th:text="${@minesweeperController.getTileText(tile)}"></span>
                 </a>
 
