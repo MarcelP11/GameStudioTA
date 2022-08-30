@@ -60,7 +60,7 @@
     <br>
 
 </div>
-    <form th:if="${@minesweeperController.finished}" action="/comment" method="post">
+    <form th:if="${@minesweeperController.finished} and ${@userController.logged}" action="/comment" method="post">
         <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn" id="comment" required/> <br>
         <button type="submit">Send comment</button>
     </form>
@@ -68,7 +68,7 @@
 <div>
 
 </div>
-    <form th:if="${@userController.logged}" action="/rating" method="post">
+    <form th:if="${@minesweeperController.finished} and ${@userController.logged}" action="/rating" method="post">
         <p>Please rate this game:</p>
         <div>
         <input type="radio" name="rateIn" id="rating-1" value="1" />
@@ -90,12 +90,15 @@
 
     <h1>Table of best scores</h1>
     <table class="scores" style="border: 1px solid;">
+        <thead>
         <tr>
             <th>Rank</th>
             <th>Username</th>
             <th>Points</th>
             <th>Date</th>
         </tr>
+        </thead>
+        <tbody>
         <tr style="border: 1px solid;" th:each="score: ${bestScores}">
             <td th:text="${scoreStat.index+1}"></td>
             <!-- scoreStat je na poradie-->
@@ -103,6 +106,7 @@
             <td th:text="${score.getPoints()}"></td>
             <td th:text="${score.getPlayedOn()}"></td>
         </tr>
+        </tbody>
     </table>
 <br>
     <br>

@@ -23,13 +23,14 @@ import java.util.Date;
 //minewseeper controller prebera ulohu consoleUI
 
 @Controller
-@RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
+@RequestMapping("/minesweeper")
+//ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
 public class MinesweeperController {   //controller na ovladanie celej hry
-    private Field field = new Field(9, 9, 2);  //vytvorime pole
+    private Field field;  //vytvorime pole
     //zapismee metodu ktora vypise/vygeneruje hracie pole
 
-    private boolean marking=false; //premenna ci oznacujem alebo otvaram
+    private boolean marking = false; //premenna ci oznacujem alebo otvaram
 
     private boolean isPlaying = true;
 
@@ -47,44 +48,64 @@ public class MinesweeperController {   //controller na ovladanie celej hry
 
     private GameState gamestate;
 
+
+    //methods prepa
     @RequestMapping
     //aka sablona sa ma spracovat ked sa spusti controller minewseerper
-    public String minesweeper(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column, Model model) {   //aby parametre boli povinne
-        if(row!=null && column !=null){
-            if(this.field.getState()==GameState.PLAYING){  //osetrenie  - robi sa iba ak je stav PLAYING
-                if(marking){
-                    field.markTile(row,column);  //updatne vnutorny stav
-                }else{
-                    field.openTile(row,column);
-                }
-            }
-        }
-
-        if(this.field.getState()!=GameState.PLAYING && this.isPlaying==true){  //ak je hra vyriesenia alebo fail tak sa zmeni stav isPlaying
-            this.isPlaying=false;
-
-            if(userController.isLogged()){  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
-                Score newScore = new Score("Minesweeper", userController.getLoggedUser(),this.field.getScore(),new Date());
-                scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
-            }
-
-        }
-
-
+    public String processUserInput(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column, Model model) {   //aby parametre boli povinne
+        startOrUpdateGame(row, column);
         prepareModel(model);
         return "minesweeper";  //vrati sablonu v html subore
     }
 
+    private void startNewGame() {
+        this.field = new Field(9, 9, 3);
+        this.isPlaying = true;
+        this.marking = false;
+    }
+
+    private void startOrUpdateGame(Integer row, Integer column) {
+        if (field == null) {  //ak je pole prazdne tak sa vytvori nove pole
+            startNewGame();
+        }
+        if (row != null && column != null) {
+            if (this.field.getState() == GameState.PLAYING) {  //osetrenie  - robi sa iba ak je stav PLAYING
+                if (marking) {
+                    field.markTile(row, column);  //updatne vnutorny stav
+                } else {
+                    field.openTile(row, column);
+                }
+            }
+        }
+
+        if (this.field.getState() != GameState.PLAYING && this.isPlaying == true) {  //ak je hra vyriesenia alebo fail tak sa zmeni stav isPlaying
+            this.isPlaying = false;
+
+            if (userController.isLogged()) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
+                Score newScore = new Score("Minesweeper", userController.getLoggedUser(), this.field.getScore(), new Date());
+                scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
+            }
+
+        }
+    }
+
+
     @RequestMapping("/mark")
-    public String changeMarking(Model model){
-        marking = !marking;
+    public String changeMarking(Model model) {
+        switchMode();
         prepareModel(model);
         return "minesweeper";
     }
 
+    private void switchMode(){
+        if (this.field.getState() == GameState.PLAYING) {
+            this.marking = !this.marking;
+        }
+    }
+
     @RequestMapping("/new")
-    public String newGame(Model model){
-        field=new Field(9,9,2);
+    public String newGame(Model model) {
+        startNewGame();
         prepareModel(model);
         return "minesweeper";
     }
@@ -94,11 +115,11 @@ public class MinesweeperController {   //controller na ovladanie celej hry
         return new Date().toString();
     }
 
-    public boolean getMarking(){
+    public boolean getMarking() {
         return marking;
     }
 
-    public String getFieldAsHtml(){
+    public String getFieldAsHtml() {
         int rowCount = field.getRowCount();
         int colCount = field.getColumnCount();
 
@@ -107,10 +128,10 @@ public class MinesweeperController {   //controller na ovladanie celej hry
         for (int row = 0; row < rowCount; row++) {
             sb.append("<tr>\n");
             for (int col = 0; col < colCount; col++) {
-                Tile tile =field.getTile(row,col);
+                Tile tile = field.getTile(row, col);
 
-                sb.append("<td class='"+getTileClass(tile)+"'> ");
-                sb.append("<a href='/minesweeper?row="+row+"&column="+col+"'>");
+                sb.append("<td class='" + getTileClass(tile) + "'> ");
+                sb.append("<a href='/minesweeper?row=" + row + "&column=" + col + "'>");
 
                 sb.append("<span>" + getTileText(tile) + "</span>");
                 sb.append("</a>\n");
@@ -157,22 +178,23 @@ public class MinesweeperController {   //controller na ovladanie celej hry
                 throw new RuntimeException("Unexpected tile state");
         }
     }
-public String getGameScore(){
-       String result="";
-        if(field.getState()==GameState.SOLVED){
+
+    public String getGameScore() {
+        String result = "";
+        if (field.getState() == GameState.SOLVED) {
             //pridavanie hraca do databazy pridat do samostatnej metody pretoze toto je getter a nemal by robit dalsie ine veci
-            result ="Your score is:"+ String.valueOf(field.getScore());
+            result = "Your score is:" + String.valueOf(field.getScore());
         }
         return result;
     }
 
-    public boolean isFinished(){   //metoda aby sa k nej dalo cez thymeleaf pristuput
-        return this.field.getState()!=GameState.PLAYING;
+    public boolean isFinished() {   //metoda aby sa k nej dalo cez thymeleaf pristuput
+        return this.field.getState() != GameState.PLAYING;
     }
 
     //vytvorime metodu ktora pripravi model
-    private void prepareModel(Model model){
-        model.addAttribute("message","Sprava z modelu");
+    private void prepareModel(Model model) {
+        model.addAttribute("message", "Sprava z modelu");
         model.addAttribute("minesweeperField", field.getTiles());
         model.addAttribute("bestScores", scoreService.getBestScores("Minesweeper"));
         model.addAttribute("gameStatus", field.getState());

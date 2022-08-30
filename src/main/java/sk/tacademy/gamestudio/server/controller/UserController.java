@@ -40,16 +40,15 @@ public class UserController {
 
     @RequestMapping("/newplayer")
     public String newPlayer(String username, String fullname, String evaluation, String country, String occupation) {
-        if(isValidUsername(username)&&isValidFullname(fullname)&&isValidEvaluation(evaluation)){
+        if (isValidUsername(username) && isValidFullname(fullname) && isValidEvaluation(evaluation)&&isValidCountry(country)&&isValidOccupation(occupation)) {
             List<Country> countries = countryService.getCountries();  // country a occupation musia byt perzistentne
-//          int idCountry = Integer.parseInt(country);  //z formulara sa natiahnu cisla
+            int idCountry = Integer.parseInt(country);  //z formulara sa natiahnu cisla
             List<Occupation> occupations = occupationService.getOccupations(); // country a occupation musia byt perzistentne
-//         int idOccupation = Integer.parseInt(occupation);  //z formulara sa natiahnu cisla
-            Player newPlayer = new Player(username, fullname, Integer.parseInt(evaluation), countries.get(Integer.parseInt(country)),occupations.get(Integer.parseInt(occupation))); //vytovrenie noveho hraca
+            int idOccupation = Integer.parseInt(occupation);  //z formulara sa natiahnu cisla
+            Player newPlayer = new Player(username, fullname, Integer.parseInt(evaluation), countries.get(idCountry), occupations.get(idOccupation)); //vytovrenie noveho hraca
             playerService.addPlayer(newPlayer);  //pridanie hraca do databazy
             return "redirect:/gamestudio";  //po registracii sa presmeruje na prihlasovaciu stranku
-        }
-        else{
+        } else {
             return "redirect:/registration";  //ak su nejake udaje nespravne vrati sa spat na registracnu stranku
         }
     }
@@ -57,6 +56,7 @@ public class UserController {
     private boolean isValidUsername(String username) {  //vsalidacia dlzky mena
         return (username.trim().length()) > 0 && (username.trim().length()) <= 32;  //vracia true ak je username v pozdaovvanej dlzke
     }
+
     private boolean isValidFullname(String fullname) {  //vsalidacia dlzky celeho mena
         return (fullname.trim().length()) > 0 && (fullname.trim().length()) <= 128;  //vracia true ak je fullname v pozdaovvanej dlzke
     }
@@ -65,12 +65,16 @@ public class UserController {
         return (Integer.parseInt(evaluation.trim())) > 0 && (Integer.parseInt(evaluation.trim())) <= 10;  //vracia true ak je evaluation v rozmedzi od 1 do 10
     }
 
+ private boolean isValidCountry(String country){  //validacia country
+        int sizeOfCountriesList=countryService.getCountries().size();  //vytiahnem si velkost listu
+        return Integer.parseInt(country)>=0&&Integer.parseInt(country)<=sizeOfCountriesList;  //porovnavam ci cislo ktore pride z formulara je v danom rozmedzi
+   }
 
-    //doplnit validaciu country a occupatuobn
-//    private boolean isValidCountry(String country){
-//        return country.equals()
-//    }
+    private boolean isValidOccupation(String occupation){  //validacia occupation
+        int sizeOfOccupationsList=occupationService.getOccupations().size();  //vytiahnem si velkost listu
+        return Integer.parseInt(occupation)>=0&&Integer.parseInt(occupation)<=sizeOfOccupationsList;  //porovnavam ci cislo ktore pride z formulara je v danom rozmedzi
 
+    }
     @RequestMapping("/login")
     public String login(String login, String password) {   //metoda pre prihlasenie, nazvy paramatrov su nazvy tagov atribut name
         this.loggedUser = login.trim();  //osetrenie zadania prihlasovacieho mena bez medzier
@@ -123,7 +127,7 @@ public class UserController {
     public boolean isRegistered(String username) {  //metoda vracia true alebo false ak je alebo nie je pouzzivatel registrovany
         List<Player> players = playerService.getPlayersByUserName(username);
         int noOfFoundPlayers = players.size();
-        if (noOfFoundPlayers==0){
+        if (noOfFoundPlayers == 0) {
             return false;
         }
         return true;
@@ -137,11 +141,6 @@ public class UserController {
         return String.valueOf(occupation);  //metoda vracia text profesii
     }
 
-//    public String getIndexCountry(Country country){
-//        List<Country> countries = countryService.getCountries();
-//        int index=countries.indexOf(country.getCountry());
-//        return String.valueOf(index);
-//    }
 
     private void prepareModel(Model model) {
         model.addAttribute("countries", countryService.getCountries());   //pridame do modelu zoznam s krajinami
