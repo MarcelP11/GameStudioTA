@@ -159,7 +159,6 @@ public class ConsoleUI implements UserInterface {
         //throw new UnsupportedOperationException("Method update not yet implemented");
         /*
         //moj zapis
-
         String columnIndex="  ";
         for (int i = 0; i < field.getColumnCount(); i++) {
             columnIndex+=i+" ";
@@ -170,7 +169,6 @@ public class ConsoleUI implements UserInterface {
             String rowValues=c+" ";
             for (int j = 0; j < field.getColumnCount(); j++) {
                 Tile t = field.getTile(i, j);
-
                 if(t.getState() == Tile.State.OPEN) {
                   rowValues += t;
                 } else if (t.getState()==Tile.State.MARKED){
@@ -181,7 +179,6 @@ public class ConsoleUI implements UserInterface {
             }
             System.out.printf("%s%n",rowValues);
             c++;
-
          */
         System.out.printf("Cas hrania: %d s%n", field.getPlayTimeInSeconds());
         System.out.printf(format, "");
@@ -424,9 +421,7 @@ public class ConsoleUI implements UserInterface {
         }
         this.setting = setting;
         this.setting.save();
-
     }
     */
 
 }
-

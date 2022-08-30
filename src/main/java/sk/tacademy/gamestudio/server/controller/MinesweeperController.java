@@ -26,7 +26,7 @@ import java.util.Date;
 @RequestMapping("/minesweeper")  //ked dame adresu nasho servera tak ma prevzat konrolu ta metodu ku ktorej je priradena tao cesta teda minesweeper
 @Scope(WebApplicationContext.SCOPE_SESSION)   //aby pre kazdeho hraca sa vytvorila nova instancia controllera
 public class MinesweeperController {   //controller na ovladanie celej hry
-    private Field field = new Field(9, 9, 10);  //vytvorime pole
+    private Field field = new Field(9, 9, 2);  //vytvorime pole
     //zapismee metodu ktora vypise/vygeneruje hracie pole
 
     private boolean marking=false; //premenna ci oznacujem alebo otvaram
@@ -84,7 +84,7 @@ public class MinesweeperController {   //controller na ovladanie celej hry
 
     @RequestMapping("/new")
     public String newGame(Model model){
-        field=new Field(9,9,10);
+        field=new Field(9,9,2);
         prepareModel(model);
         return "minesweeper";
     }
@@ -164,6 +164,10 @@ public String getGameScore(){
             result ="Your score is:"+ String.valueOf(field.getScore());
         }
         return result;
+    }
+
+    public boolean isFinished(){   //metoda aby sa k nej dalo cez thymeleaf pristuput
+        return this.field.getState()!=GameState.PLAYING;
     }
 
     //vytvorime metodu ktora pripravi model

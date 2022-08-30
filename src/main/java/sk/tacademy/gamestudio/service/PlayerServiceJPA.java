@@ -23,4 +23,5 @@ public class PlayerServiceJPA implements PlayerService {
                 .setParameter("username", uName)
                 .getResultList();
     }
+
 }

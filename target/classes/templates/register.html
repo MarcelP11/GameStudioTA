@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout/layoutGamestudio.html}"
+        lang="sk">
+<head>
+  <title>Gamestudio - registration</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+  <h1>Registration</h1>
+  <p>You are not registered yet. Please register first to play my games.</p><br>
+  <form action="/newplayer" method="post">
+    <label for="username"> Username: </label> <input type="text" name="username" id="username" minlength="1" maxlength="32" placeholder="Type your username (1 - 32 characters)" required/> <br>
+    <label for="fullname"> Fullname: </label> <input type="text" name="fullname" id="fullname" minlength="1" maxlength="128" placeholder="Type your fullname (1 - 128 characters)" required/> <br>
+    <label for="evaluation"> Self-evaluation: </label>
+    <input type="number" id="evaluation" name="evaluation"
+           min="1" max="10" step="1" value="5" style="width: 3em;" required><br>
+    <label for="country"> Country: </label>
+    <select id="country" name="country"><br>
+      <option th:each="country: ${countries}" th:attr="value=${countries.indexOf(country)}" th:text="${@userController.getCountry(country)}"></option><br>
+    </select> <br>
+    <label for="occupation"> Occupation: </label>
+    <select id="occupation" name="occupation"><br>
+      <option th:each="occupation: ${occupations}" th:attr="value=${occupations.indexOf(occupation)}" th:text="${@userController.getOccupation(occupation)}"></option><br>
+    </select> <br>
+    <button type="submit">Register now</button>
+  </form>
+</main>
+</body>
+</html>

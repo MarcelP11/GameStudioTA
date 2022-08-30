@@ -3,13 +3,13 @@ package sk.tacademy.gamestudio.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(uniqueConstraints =
-        {@UniqueConstraint(name = "UniqueUsernameAndFullname", columnNames = {"userName", "fullName"})})
+//@Table(uniqueConstraints =
+//        {@UniqueConstraint(name = "UniqueUsernameAndFullname", columnNames = {"userName", "fullName"})})
 public class Player {
     @Id
     @GeneratedValue
     private long ident;
-    @Column(nullable = false, length = 32)
+    @Column(unique = true, nullable = false, length = 32)
     private String userName;
     @Column(nullable = false, length = 128)
     private String fullName;
@@ -31,6 +31,10 @@ public class Player {
         this.selfEvaluation = selfEvaluation;
         this.country = country;
         this.occupation = occupation;
+    }
+
+    public long getIdent() {
+        return ident;
     }
 
     public String getUserName() {
