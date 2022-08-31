@@ -45,7 +45,7 @@
     <h3 th:text="${@minesweeperController.getGameScore()}"></h3>
 </div>
 
-<div>
+<section>
     <table class='minefield'>
         <tr th:each="row: ${minesweeperField}">
             <td th:each="tile: ${row}"
@@ -59,7 +59,7 @@
     </table>
     <br>
 
-</div>
+</section>
     <form th:if="${@minesweeperController.finished} and ${@userController.logged}" action="/comment" method="post">
         <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn" id="comment" required/> <br>
         <button type="submit">Send comment</button>

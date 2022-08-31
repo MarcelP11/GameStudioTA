@@ -2,10 +2,12 @@ package sk.tacademy.gamestudio.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import sk.tacademy.gamestudio.entity.Score;
 import sk.tacademy.gamestudio.minesweeper.core.Clue;
@@ -49,7 +51,6 @@ public class MinesweeperController {   //controller na ovladanie celej hry
     private GameState gamestate;
 
 
-    //methods prepa
     @RequestMapping
     //aka sablona sa ma spracovat ked sa spusti controller minewseerper
     public String processUserInput(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column, Model model) {   //aby parametre boli povinne
@@ -64,7 +65,8 @@ public class MinesweeperController {   //controller na ovladanie celej hry
         this.marking = false;
     }
 
-    private void startOrUpdateGame(Integer row, Integer column) {
+    private boolean startOrUpdateGame(Integer row, Integer column) {
+        boolean justFinished=false;
         if (field == null) {  //ak je pole prazdne tak sa vytvori nove pole
             startNewGame();
         }
@@ -80,13 +82,15 @@ public class MinesweeperController {   //controller na ovladanie celej hry
 
         if (this.field.getState() != GameState.PLAYING && this.isPlaying == true) {  //ak je hra vyriesenia alebo fail tak sa zmeni stav isPlaying
             this.isPlaying = false;
+            justFinished=true;
 
-            if (userController.isLogged()) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise
+            if (userController.isLogged()&& this.field.getState()==GameState.SOLVED) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise a ked vyhral tiez
                 Score newScore = new Score("Minesweeper", userController.getLoggedUser(), this.field.getScore(), new Date());
                 scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
             }
 
         }
+        return justFinished;
     }
 
 
@@ -110,6 +114,37 @@ public class MinesweeperController {   //controller na ovladanie celej hry
         return "minesweeper";
     }
 
+    //metody pre dynamicke riesenie
+    @RequestMapping("/asynch")
+    public String loadInAsynchMode(){
+        startOrUpdateGame(null, null);   //row a column mozu byt null pretoze sme to tak nastavili, vsetko ide priamo cez reqeusty a nechceme aby paramaetre boli v url
+        return "minesweeperAsynch";   //vraciame sablonu s asyncrhonnym rezimom
+    }
+
+    @RequestMapping(value="/json", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field processUserInputJson(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column) {   //aby parametre boli povinne
+        startOrUpdateGame(row, column);
+        return this.field;  //vraciame konkretny typ ktory sa prevedie do medialnehho typu JSON
+    }
+
+    @RequestMapping(value="/jsonmark", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field changeMarkingJson() {
+        switchMode();
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        this.field.setMarking(marking);  //zmeni sa pretoze switchmode meni hodnotu premennej marking. Tieto dva riadkky nam nahradzuju pripravu modelu
+        return this.field;
+    }
+
+    @RequestMapping(value="/jsonnew", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field newGameJson() {
+        startNewGame();
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        this.field.setMarking(marking);  //V podstate sa nezmeni iba sa nastavi stav Tieto dva riadkky nam nahradzuju pripravu modelu
+        return this.field;
+    }
 
     public String getCurrTime() {   //do html budeme chciet vlozit retazec
         return new Date().toString();
