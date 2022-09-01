@@ -7,6 +7,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Date;
+
 @Transactional
 public class RatingServiceJPA implements RatingService {
     @PersistenceContext
@@ -32,7 +33,13 @@ public class RatingServiceJPA implements RatingService {
 
     @Override
     public int getAverageRating(String name) {
-        return (int)(double) entityManager
+        if (entityManager
+                .createQuery("select avg(r.rating) from Rating r where r.game = :myGame")
+                .setParameter("myGame", name)
+                .getSingleResult() == null) {
+            return 0;
+        }
+        return (int) (double) entityManager
                 .createQuery("select avg(r.rating) from Rating r where r.game = :myGame")
                 .setParameter("myGame", name)
                 .getSingleResult();

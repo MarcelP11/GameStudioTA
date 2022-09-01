@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layoutGamestudio.html}"
+      lang="sk">
+<head>
+    <!--    <meta charset="UTF-8" />-->
+    <!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <!--    <meta name="author" content="Stefan Korecko" />-->
+    <!--    <link rel="stylesheet"-->
+    <!--          href="/css/mines.css"-->
+    <!--          media="screen" />-->
+
+
+    <title>GameStudio - Stones</title>
+</head>
+
+<body>
+<main layout:fragment="content">
+
+
+    <h2>Stones</h2>
+
+
+    <div class="minesControl">
+ <h2>Controls</h2>
+        <a class="abutton" href="/stones/up">Hore</a>
+     <a class="abutton" href="/stones/down">Dole</a><br>
+     <a class="abutton" href="/stones/right">Doprava</a>
+     <a class="abutton" href="/stones/left">Dolava</a><br>
+        <hr>
+
+
+        <a class="abutton" href="/stones/new">Nova hra</a>
+
+    </div>
+
+    <!--<div th:utext="${@minesweeperController.fieldAsHtml}"></div>-->
+
+    <div>
+        <h2>Status of the game:<span th:text="${gameStatus}"></span></h2>
+        <h3 th:text="${@stoneController.getGameScore()}"></h3>
+    </div>
+
+    <section>
+        <table class='minefield'>
+            <tr th:each="row: ${stoneField}">
+                <td th:each="box: ${row}">
+                    <a th:attr="href='/stones?row='+${rowStat.index}+'&column='+${boxStat.index}">
+                        <span th:text="${@stoneController.getBoxValue(box)}"></span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <br>
+
+    </section>
+
+
+    <form th:if="${@stoneController.finished} and ${@userController.logged}" action="/commentStones" method="post">
+        <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn"
+                                                                     id="comment" required/> <br>
+        <button type="submit">Send comment</button>
+    </form>
+    <br>
+                <form th:if="${@stoneController.finished} and ${@userController.logged}" action="/ratingStones" method="post">
+                       <p>Please rate this game:</p>
+                       <div>
+                           <input type="radio" name="rateIn" id="rating-1" value="1"/>
+                           <label for="rating-1">1</label>
+                           <input type="radio" name="rateIn" id="rating-2" value="2"/>
+                           <label for="rating-2">2</label>
+                           <input type="radio" name="rateIn" id="rating-3" value="3" checked/>
+                           <label for="rating-3">3</label>
+                           <input type="radio" name="rateIn" id="rating-4" value="4"/>
+                           <label for="rating-4">4</label>
+                           <input type="radio" name="rateIn" id="rating-5" value="5"/>
+                           <label for="rating-5">5</label>
+                       </div>
+                       <br>
+                       <button type="submit">Send rating</button>
+                   </form>
+                   <br>
+                   <div>
+
+                               <h1>Table of best scores</h1>
+                               <table class="scores" style="border: 1px solid;">
+                                   <thead>
+                                   <tr>
+                                       <th>Rank</th>
+                                       <th>Username</th>
+                                       <th>Points</th>
+                                       <th>Date</th>
+                                   </tr>
+                                   </thead>
+                                   <tbody>
+                                   <tr style="border: 1px solid;" th:each="score: ${bestScores}">
+                                       <td th:text="${scoreStat.index+1}"></td>
+
+                <!-- scoreStat je na poradie-->
+                <td th:text="${score.getUsername()}"></td>
+                <td th:text="${score.getPoints()}"></td>
+                <td th:text="${score.getPlayedOn()}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <h1>Comments</h1>
+        <table class="scores" style="border: 1px solid;">
+            <tr>
+                <th>Username</th>
+                <th>Comment</th>
+                <th>Date</th>
+            </tr>
+            <tr style="border: 1px solid;" th:each="comment: ${lastComments}">
+                <td th:text="${comment.getUsername()}"></td>
+                <td th:text="${comment.getComment()}"></td>
+                <td th:text="${comment.getCommentedOn()}"></td>
+            </tr>
+        </table>
+        <br>
+        <br>
+        <h2>Average rating of this game is: <span style="color:blue" th:text="${avgRating}"></span></h2>
+    </div>
+
+</main>
+</body>
+</html>

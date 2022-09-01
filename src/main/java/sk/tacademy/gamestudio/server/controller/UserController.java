@@ -97,8 +97,8 @@ public class UserController {
         return "redirect:/gamestudio";  //neide na sablonu ale na predpripravenu stranku
     }
 
-    @RequestMapping("/comment")
-    public String comment(String commentIn) {
+    @RequestMapping("/commentMinesweeper")
+    public String commentMinesweeper(String commentIn) {
         if (this.loggedUser != null) {
             Comment newComment = new Comment("Minesweeper", this.loggedUser, commentIn, new Date());
             commentService.addComment(newComment);
@@ -106,13 +106,31 @@ public class UserController {
         return "redirect:/minesweeper";
     }
 
-    @RequestMapping("/rating")
-    public String rating(String rateIn) {
+    @RequestMapping("/ratingMinesweeper")
+    public String ratingMinesweeper(String rateIn) {
         if (this.loggedUser != null) {
             Rating newRating = new Rating("Minesweeper", this.loggedUser, Integer.parseInt(rateIn), new Date());
             ratingService.setRating(newRating);
         }
         return "redirect:/minesweeper";
+    }
+
+    @RequestMapping("/commentStones")
+    public String commentStones(String commentIn) {
+        if (this.loggedUser != null) {
+            Comment newComment = new Comment("Stones", this.loggedUser, commentIn, new Date());
+            commentService.addComment(newComment);
+        }
+        return "redirect:/stones";
+    }
+
+    @RequestMapping("/ratingStones")
+    public String ratingStones(String rateIn) {
+        if (this.loggedUser != null) {
+            Rating newRating = new Rating("Stones", this.loggedUser, Integer.parseInt(rateIn), new Date());
+            ratingService.setRating(newRating);
+        }
+        return "redirect:/stones";
     }
 
 

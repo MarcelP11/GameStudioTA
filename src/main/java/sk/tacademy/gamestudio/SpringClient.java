@@ -26,18 +26,33 @@ public class SpringClient {
     public CommandLineRunner runnerJPA(PlaygroundJPA console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }  //rovnaka metoda ale lisi sa menom a typom
-    @Bean
+
+    //bean runnera pre minesweeper
+   // @Bean
     public CommandLineRunner runner(ConsoleUI console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
     }
+
+    //bean runnera pre kamene
+    @Bean
+    public CommandLineRunner runner(sk.tacademy.gamestudio.stones.consoleui.ConsoleUI console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
+        return s -> console.play();
+    }
+
 
     @Bean
     public PlaygroundJPA consoleJPA(){   //factory metoda ktora vytvara produkt resp komponenty
         return new PlaygroundJPA();
     }
+    //bean konzoly pre minesweeper
     @Bean
     public ConsoleUI console(){   //factory metoda ktora vytvara produkt resp komponenty
         return new ConsoleUI();
+    }
+//bean konzoly pre kamene
+    @Bean
+    public sk.tacademy.gamestudio.stones.consoleui.ConsoleUI consoleStones(){   //factory metoda ktora vytvara produkt resp komponenty
+        return new sk.tacademy.gamestudio.stones.consoleui.ConsoleUI();
     }
 
     @Bean

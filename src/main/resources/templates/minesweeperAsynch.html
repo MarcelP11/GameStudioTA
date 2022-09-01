@@ -40,7 +40,7 @@
 
     </section>
 <br>
-    <form th:if="${@userController.logged}" action="/comment" method="post">
+    <form th:if="${@userController.logged}" action="/commentMinesweeper" method="post">
         <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn"
                                                                      id="comment"  required /> <br>
         <button type="submit" class="disabling" id="submit-comment" disabled>Send comment</button>
@@ -49,7 +49,7 @@
     <div>
 
     </div>
-    <form th:if="${@userController.logged}" action="/rating" method="post">
+    <form th:if="${@userController.logged}" action="/ratingMinesweeper" method="post">
         <p>Please rate this game:</p>
         <div>
             <input type="radio" name="rateIn" id="rating-1" value="1"/>
@@ -124,8 +124,7 @@
         scoresTableBody:  document.getElementById("scoresTableBody"),
         btToOpenOrMark:   document.getElementById("btToOpenOrMark"),
         gameStatus:       document.getElementById("gameStatus"),
-        commentsTableBody: document.getElementById("commentsTableBody"),
-        submit1:  document.getElementById("submit1")
+        commentsTableBody: document.getElementById("commentsTableBody")
     }
 
 
@@ -204,7 +203,7 @@ function fetchGameFieldAndRenderAll(getJsonUrl,viewElements) {
 
                 renderGameField(gameFieldData, viewElements);
 
-enabling(gameFieldData);
+   //enabling(gameFieldData);  //nechce to fungovat pretoze ak nie je prihlaseny tak nesu zobrazenem treba prerobit metodu
                 if(gameFieldData.justFinished){
 
                 fetchAndRenderBestScores(getJsonScoreUrl,viewElements);
