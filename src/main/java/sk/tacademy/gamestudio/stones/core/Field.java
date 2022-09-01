@@ -9,6 +9,16 @@ public class Field {
     private GameState state = GameState.PLAYING;
     private long startMillis;
 
+    private boolean justFinished=false;
+
+    public boolean isJustFinished() {
+        return justFinished;
+    }
+
+    public void setJustFinished(boolean justFinished) {
+        this.justFinished = justFinished;
+    }
+
     public int getRowCount() {
         return rowCount;
     }

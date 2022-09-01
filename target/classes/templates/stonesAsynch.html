@@ -12,22 +12,20 @@
     <!--          media="screen" />-->
 
 
-    <title>GameStudio - Minesweeper</title>
+    <title>GameStudio - Stones</title>
 </head>
 
 <body>
 <main layout:fragment="content">
 
 
-    <h2>Minesweeper</h2>
+    <h2>Stones</h2>
 
 
     <div class="minesControl">
 
-        <button type="button" id="btToOpenOrMark" class="abutton" onclick="processModeChangeClick()">Na otváranie
-        </button>
         <button type="button" id="btNewGame" class="abutton" onclick="processNewGameClick()">Nová hra</button>
-
+To control use arrows on you keyboard.
     </div>
 
     <!--<div th:utext="${@minesweeperController.fieldAsHtml}"></div>-->
@@ -36,11 +34,11 @@
         <h2>Status of the game: <span id="gameStatus"></span></h2>
     </div>
 
-    <section id="minesweeperField">
+    <section id="stonesField">
 
     </section>
 <br>
-    <form th:if="${@userController.logged}" action="/commentMinesweeper" method="post">
+    <form th:if="${@userController.logged}" action="/commentStones" method="post">
         <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn"
                                                                      id="comment"  required /> <br>
         <button type="submit" class="disabling" id="submit-comment" disabled>Send comment</button>
@@ -49,7 +47,7 @@
     <div>
 
     </div>
-    <form th:if="${@userController.logged}" action="/ratingMinesweeper" method="post">
+    <form th:if="${@userController.logged}" action="/ratingStones" method="post">
         <p>Please rate this game:</p>
         <div>
             <input type="radio" name="rateIn" id="rating-1" value="1"/>
@@ -112,17 +110,17 @@
     <div th:text="${@minesweeperController.currTime}"></div>
 
     <script type="text/javascript">
-     const getJsonScoreUrl ="/api/score/Minesweeper";  //adresa pre json data so skore
+       const getJsonScoreUrl ="/api/score/Stones";  //adresa pre json data so skore
 
-    const getJsonCommentUrl ="/api/comment/Minesweeper";  //adresa pre json data s komentami
+    const getJsonCommentUrl ="/api/comment/Stones";  //adresa pre json data s komentami
 
-    const getJsonAvgRatingUrl ="/api/rating/avg/Minesweeper";  //adresa pre json data s priemernym skore
+    const getJsonAvgRatingUrl ="/api/rating/avg/Stones";  //adresa pre json data s priemernym skore
     const tableBodyAvgRatingElmId="avgRating";   //ID elementu do ktoreho sa prida render dat
-    const getJsonFieldUrl = "/minesweeper/json";  //adresa na metodu ktora robi zmeny
+    const getJsonFieldUrl = "/stones/json";  //adresa na metodu ktora robi zmeny
     const viewElements ={   //na jedno mieste budeme mat elementy a pristup k nim
-        minesweeperField: document.getElementById("minesweeperField"),
+        stonesField: document.getElementById("stonesField"),
         scoresTableBody:  document.getElementById("scoresTableBody"),
-        btToOpenOrMark:   document.getElementById("btToOpenOrMark"),
+
         gameStatus:       document.getElementById("gameStatus"),
         commentsTableBody: document.getElementById("commentsTableBody")
     }
@@ -133,6 +131,99 @@
     fetchAndRenderAvgRating(getJsonAvgRatingUrl,tableBodyAvgRatingElmId);
     fetchGameFieldAndRenderAll(getJsonFieldUrl,viewElements);
 
+
+document.addEventListener('keydown', function(e) {
+    switch (e.keyCode) {
+        case 37:
+                processMoveLeft();
+            break;
+        case 38:
+           processMoveUp();
+            break;
+        case 39:
+            processMoveRight();
+            break;
+        case 40:
+            processMoveDown();
+            break;
+    }
+});
+
+
+
+function processMoveLeft(){
+        fetchGameFieldAndRenderAll(
+            `/stones/jsonleft`,
+            viewElements);
+    }
+
+function processMoveRight(){
+        fetchGameFieldAndRenderAll(
+            `/stones/jsonright`,
+            viewElements);
+    }
+
+function processMoveUp(){
+        fetchGameFieldAndRenderAll(
+            `/stones/jsonup`,
+            viewElements);
+    }
+
+function processMoveDown(){
+        fetchGameFieldAndRenderAll(
+            `/stones/jsondown`,
+            viewElements);
+    }
+
+function myFunction() {
+  document.getElementById("btNewGame").style.backgroundColor = "red";
+}
+
+//
+//funckai na najdenie prazdneho boxu
+function findRowOfEmptyBox(){
+let row = 0;
+        for (let r = 0; r < gameFieldData.rowCount; r++) {
+            for (let c = 0; c < gameFieldData.columnCount; c++) {
+                if (gameFieldData.boxes[r][c].getValue() == "0") {
+                    row = r;
+                }
+            }
+        }
+        return row;
+}
+//funckai na najdenie prazdneho boxu
+function findColumnOfEmptyBox(){
+let column = 0;
+        for (let r = 0; r < gameFieldData.rowCount; r++) {
+            for (let c = 0; c < gameFieldData.columnCount; c++) {
+                if (gameFieldData.boxes[r][c].getValue() == "0") {
+                    column = c;
+                }
+            }
+        }
+        return column;
+}
+
+//funkcia na posun dolava
+
+
+
+//funkcia na zmenu dolava
+function moveLeft(){
+if(gameFieldData.state=="PLAYING"){
+let column = findColumnOfEmptyBox();
+let row = findRowOfEmptyBox();
+if (row - 1 < gameFieldData.rowCount && row - 1 >= 0) {
+                let temporaryValue = gameFieldData.boxes[row - 1][column].value;
+                gameFieldData.boxes[row][column].value=temporaryValue;
+                gameFieldData.boxes[row - 1][column].value="0";
+            }
+
+}
+fetchGameFieldAndRenderAll(getJsonFieldUrl,viewElements);
+}
+
 //funkcia na zistenie stavu hry
 function getGameStatusMessage(gameFieldData) {
         let gameStatus = "";
@@ -142,36 +233,21 @@ function getGameStatusMessage(gameFieldData) {
             gameStatus = "SOLVED (skóre: " + gameFieldData.score + ")";
         } else {
             gameStatus = "PLAYING ";
-            if (gameFieldData.marking) {
-                gameStatus += "(marking)";
-            } else {
-                gameStatus += "(opening)";
-            }
+
         }
 
         return gameStatus;
     }
 
-//funkcia na otvaranie dlazdic s adresou na funkciu pre ovladanie pola,
-    function processTileClick(row,col){
-        fetchGameFieldAndRenderAll(
-            `/minesweeper/json?row=${row}&column=${col}`,
-            viewElements);
-    }
+
 
 //funkcia pre novu hru
      function processNewGameClick(){
         fetchGameFieldAndRenderAll(
-            `/minesweeper/jsonnew`,
+            `/stones/jsonnew`,
             viewElements);
     }
 
-//funkcia pre zmenu rezimu
-    function processModeChangeClick(){
-        fetchGameFieldAndRenderAll(
-            `/minesweeper/jsonmark`,
-            viewElements);
-    }
 
 
 //funkcia pre vyrenderovanie hracieho pola
@@ -193,13 +269,7 @@ function fetchGameFieldAndRenderAll(getJsonUrl,viewElements) {
                     viewElements.gameStatus.innerHTML=newStatusMessage;
                 }
 
-                let newBtLabel="Na označovanie";
-                if(gameFieldData.marking){
-                    newBtLabel="Na otváranie";
-                }
-                if(viewElements.btToOpenOrMark.innerHTML!=newBtLabel){
-                    viewElements.btToOpenOrMark.innerHTML=newBtLabel;
-                }
+
 
                 renderGameField(gameFieldData, viewElements);
 
@@ -213,7 +283,7 @@ function fetchGameFieldAndRenderAll(getJsonUrl,viewElements) {
             .catch(error => { ////here we process all the failed promises
                 errorMessage = "Nepodarilo sa získať alebo vykreslit herne pole. Podrobnosti: " + error;
                 console.log(errorMessage);
-                viewElements.minesweeperField.innerHTML =errorMessage;  // v pripade chyby sa do elementu vpise chyba
+                viewElements.stonesField.innerHTML =errorMessage;  // v pripade chyby sa do elementu vpise chyba
                 //document.getElementById(fieldElmId).innerHTML =error;
             });
     }
@@ -238,15 +308,12 @@ document.getElementById("submit-rating").disabled=true;
             html2Render+=" <tr>\n";   //pridanie riadku
 
             for(let col=0;col<gameFieldData.columnCount;col++){
-            let onClickHandling="";
-            if(gameFieldData.state=="PLAYING"&& gameFieldData.tiles[row][col].state!="OPEN"){  //ak hrame chceme aby sa dalo klikat
-            onClickHandling=`onclick='processTileClick(${row},${col})'`;
-            }
+
 
                 html2Render+=
-                    `<td class='${getTileClass(gameFieldData.tiles[row][col])}' ${onClickHandling}>
+                    `<td>
                         <span>
-                        ${getTileText(gameFieldData.tiles[row][col])}
+                        ${getBoxValue(gameFieldData.boxes[row][col])}
                         </span>
                      </td>`;
             }
@@ -255,7 +322,7 @@ document.getElementById("submit-rating").disabled=true;
         }
                 html2Render+="</table>\n";
 
-        viewElements.minesweeperField.innerHTML=html2Render;
+        viewElements.stonesField.innerHTML=html2Render;
     }
 
    /**
@@ -264,47 +331,10 @@ document.getElementById("submit-rating").disabled=true;
      * @param tile - the Tile object the text is extracted from
      * @return the text that may be displayed inside a HTML element representing the Tile tile
      */
-    function getTileText(tile){
-        switch (tile.state){
-            case "CLOSED":
-                return "-";
-            case "MARKED":
-                return "M";
-            case "OPEN":
-                if (tile.value!=undefined) {
-                    return ""+tile.value;
-                } else {
-                    return "X";
-                }
-            default:
-                return "?";
-        }
+    function getBoxValue(box){
+
+            return ""+box.value;
     }
-
-
-        /**
-     * Gets the HTML class of the <code>td</code> element representing the tile
-     * Now public as it is called from the template
-     * @param tile the Tile object the class is assigned to
-     * @return String with the HTML class of the <code>td</code> element representing the Tile tile
-     */
-    function getTileClass(tile) {
-        switch (tile.state) {
-            case "CLOSED":
-                return "closed";
-            case "MARKED":
-                return "marked";
-            case "OPEN":
-                if (tile.value != undefined) {
-                    return "open" + tile.value;
-                } else {
-                    return "mine";
-                }
-            default:
-                return "unknown";
-        }
-    }
-
 
 
 //funkcia pre vyrenderovanie skore

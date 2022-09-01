@@ -2,10 +2,12 @@ package sk.tacademy.gamestudio.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import sk.tacademy.gamestudio.entity.Score;
 import sk.tacademy.gamestudio.minesweeper.core.Clue;
@@ -128,6 +130,61 @@ public class StoneController {
 
     public String getBoxValue(Box box) {
         return Integer.toString(box.getValue());  //vracia stringovu podobu ciselnej hodnoty boxu
+    }
+
+
+
+    //metody pre dynamicke riesenie
+    @RequestMapping("/asynch")
+    public String loadInAsynchMode(){
+        startOrUpdateGame(null, null);   //row a column mozu byt null pretoze sme to tak nastavili, vsetko ide priamo cez reqeusty a nechceme aby paramaetre boli v url
+        return "stonesAsynch";   //vraciame sablonu s asyncrhonnym rezimom
+    }
+
+    @RequestMapping(value="/json", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field processUserInputJson(@RequestParam(required = false) Integer row, @RequestParam(required = false) Integer column) {   //aby parametre boli povinne
+        startOrUpdateGame(row, column);
+        return this.field;  //vraciame konkretny typ ktory sa prevedie do medialnehho typu JSON
+    }
+    @RequestMapping(value="/jsonnew", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field newGameJson() {
+        startNewGame();
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        return this.field;
+    }
+
+    @RequestMapping(value="/jsonleft", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field changeToLeft() {
+        this.field.moveBox("a");
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        return this.field;
+    }
+
+    @RequestMapping(value="/jsonright", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field changeToRight() {
+        this.field.moveBox("d");
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        return this.field;
+    }
+
+    @RequestMapping(value="/jsonup", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field changeToUp() {
+        this.field.moveBox("w");
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        return this.field;
+    }
+
+    @RequestMapping(value="/jsondown", produces= MediaType.APPLICATION_JSON_VALUE)  //nastavime mapping a format udajov ktore sa budu posielat
+    @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
+    public Field changeToDown() {
+        this.field.moveBox("s");
+        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        return this.field;
     }
 
 
