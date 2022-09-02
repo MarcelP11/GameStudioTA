@@ -38,16 +38,12 @@ To control use arrows on you keyboard.
 
     </section>
 <br>
-    <form th:if="${@userController.logged}" action="/commentStones" method="post">
+    <form th:if="${@userController.logged}" action="/commentAndRatingStonesAsynch" method="post">
         <label for="comment"> Please insert comment: </label> <input type="text" maxlength="1000" max name="commentIn"
                                                                      id="comment"  required /> <br>
-        <button type="submit" class="disabling" id="submit-comment" disabled>Send comment</button>
-    </form>
-    <br>
-    <div>
 
-    </div>
-    <form th:if="${@userController.logged}" action="/ratingStones" method="post">
+    <br>
+
         <p>Please rate this game:</p>
         <div>
             <input type="radio" name="rateIn" id="rating-1" value="1"/>
@@ -62,7 +58,7 @@ To control use arrows on you keyboard.
             <label for="rating-5">5</label>
         </div>
         <br>
-        <button type="submit" class="disabling" id="submit-rating" disabled >Send rating</button>
+        <button type="submit" class="disabling" id="submit-rating" >Send</button>
     </form>
     <br>
 
@@ -152,15 +148,18 @@ document.addEventListener('keydown', function(e) {
 
 
 function processMoveLeft(){
+
         fetchGameFieldAndRenderAll(
             `/stones/jsonleft`,
             viewElements);
+
     }
 
 function processMoveRight(){
         fetchGameFieldAndRenderAll(
             `/stones/jsonright`,
             viewElements);
+
     }
 
 function processMoveUp(){
@@ -174,6 +173,8 @@ function processMoveDown(){
             `/stones/jsondown`,
             viewElements);
     }
+
+
 
 function myFunction() {
   document.getElementById("btNewGame").style.backgroundColor = "red";
@@ -273,7 +274,8 @@ function fetchGameFieldAndRenderAll(getJsonUrl,viewElements) {
 
                 renderGameField(gameFieldData, viewElements);
 
-   //enabling(gameFieldData);  //nechce to fungovat pretoze ak nie je prihlaseny tak nesu zobrazenem treba prerobit metodu
+   //enabling(gameFieldData);  nechce to fungovat pretoze ak nie je prihlaseny tak nesu zobrazenem treba prerobit metodu
+
                 if(gameFieldData.justFinished){
 
                 fetchAndRenderBestScores(getJsonScoreUrl,viewElements);

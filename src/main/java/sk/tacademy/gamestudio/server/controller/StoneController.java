@@ -65,24 +65,34 @@ public class StoneController {
             this.isPlaying = false;
             justFinished=true;
 
-            if (userController.isLogged()&& this.field.getState()== GameState.SOLVED) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise a ked vyhral tiez
+            if (userController.isLogged() && this.field.getState()== GameState.SOLVED) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise a ked vyhral tiez
                 Score newScore = new Score("Stones", userController.getLoggedUser(), this.field.getScore(), new Date());
                 scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
             }
-
         }
+
+        field.setJustFinished(justFinished);  //nastavenie premennej justfinished v poli na hodnotu true alebo false
         return justFinished;
+
+
     }
 
     public boolean isFinished() {   //metoda aby sa k nej dalo cez thymeleaf pristuput
         return this.field.getState() != GameState.PLAYING;
     }
+public void settingScore(){
+    if (userController.isLogged() && this.field.getState()== GameState.SOLVED) {  //ak je pouzival prihlaseny tak sa zapise jeho skore do tabulky inak sa nezapise a ked vyhral tiez
+        Score newScore = new Score("Stones", userController.getLoggedUser(), this.field.getScore(), new Date());
+        scoreService.addScore(newScore);  //prida sa do databazy zapis noveho skore
+    }
+}
 
     @RequestMapping("/left")
     public String moveLeft(Model model) {
         if(field.getState()==GameState.PLAYING){
             field.moveBox("a");
         }
+        settingScore();
         prepareModel(model);
         return "stones";
     }
@@ -92,6 +102,7 @@ public class StoneController {
         if(field.getState()==GameState.PLAYING){
             field.moveBox("d");
         }
+        settingScore();
         prepareModel(model);
         return "stones";
     }
@@ -100,6 +111,7 @@ public class StoneController {
         if(field.getState()==GameState.PLAYING){
             field.moveBox("w");
         }
+        settingScore();
         prepareModel(model);
         return "stones";
     }
@@ -108,6 +120,7 @@ public class StoneController {
         if(field.getState()==GameState.PLAYING){
             field.moveBox("s");
         }
+        settingScore();
         prepareModel(model);
         return "stones";
     }
@@ -159,7 +172,8 @@ public class StoneController {
     @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
     public Field changeToLeft() {
         this.field.moveBox("a");
-        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+       // this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        settingScore();
         return this.field;
     }
 
@@ -167,7 +181,8 @@ public class StoneController {
     @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
     public Field changeToRight() {
         this.field.moveBox("d");
-        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+       // this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        settingScore();
         return this.field;
     }
 
@@ -175,7 +190,8 @@ public class StoneController {
     @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
     public Field changeToUp() {
         this.field.moveBox("w");
-        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+       // this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        settingScore();
         return this.field;
     }
 
@@ -183,7 +199,8 @@ public class StoneController {
     @ResponseBody  //toto co vrati tato metoda bude obsahom spravy ktora pojde na klienta
     public Field changeToDown() {
         this.field.moveBox("s");
-        this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+       // this.field.setJustFinished(false);  //ked sa zmeni ovladanie tak sa neskonci hra takze preto sa to nastavuje
+        settingScore();
         return this.field;
     }
 

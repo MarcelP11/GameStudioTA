@@ -97,41 +97,53 @@ public class UserController {
         return "redirect:/gamestudio";  //neide na sablonu ale na predpripravenu stranku
     }
 
-    @RequestMapping("/commentMinesweeper")
-    public String commentMinesweeper(String commentIn) {
+    @RequestMapping("/commentAndRatingMinesweeper")
+    public String commentMinesweeper(String commentIn, String rateIn) {
         if (this.loggedUser != null) {
             Comment newComment = new Comment("Minesweeper", this.loggedUser, commentIn, new Date());
             commentService.addComment(newComment);
-        }
-        return "redirect:/minesweeper";
-    }
-
-    @RequestMapping("/ratingMinesweeper")
-    public String ratingMinesweeper(String rateIn) {
-        if (this.loggedUser != null) {
             Rating newRating = new Rating("Minesweeper", this.loggedUser, Integer.parseInt(rateIn), new Date());
             ratingService.setRating(newRating);
         }
-        return "redirect:/minesweeper";
+        return "redirect:/minesweeper/new";
     }
 
-    @RequestMapping("/commentStones")
-    public String commentStones(String commentIn) {
+
+    @RequestMapping("/commentAndRatingMinesweeperAsynch")
+    public String commentMinesweeperAsynch(String commentIn, String rateIn) {
+        if (this.loggedUser != null) {
+            Comment newComment = new Comment("Minesweeper", this.loggedUser, commentIn, new Date());
+            commentService.addComment(newComment);
+            Rating newRating = new Rating("Minesweeper", this.loggedUser, Integer.parseInt(rateIn), new Date());
+            ratingService.setRating(newRating);
+        }
+        return "redirect:/minesweeper/asynch";
+    }
+
+
+    @RequestMapping("/commentAndRatingStones")
+    public String commentStones(String commentIn, String rateIn) {
         if (this.loggedUser != null) {
             Comment newComment = new Comment("Stones", this.loggedUser, commentIn, new Date());
             commentService.addComment(newComment);
-        }
-        return "redirect:/stones";
-    }
-
-    @RequestMapping("/ratingStones")
-    public String ratingStones(String rateIn) {
-        if (this.loggedUser != null) {
             Rating newRating = new Rating("Stones", this.loggedUser, Integer.parseInt(rateIn), new Date());
             ratingService.setRating(newRating);
         }
-        return "redirect:/stones";
+        return "redirect:/stones/new";
     }
+
+
+    @RequestMapping("/commentAndRatingStonesAsynch")
+    public String commentStonesAsynch(String commentIn, String rateIn) {
+        if (this.loggedUser != null) {
+            Comment newComment = new Comment("Stones", this.loggedUser, commentIn, new Date());
+            commentService.addComment(newComment);
+            Rating newRating = new Rating("Stones", this.loggedUser, Integer.parseInt(rateIn), new Date());
+            ratingService.setRating(newRating);
+        }
+        return "redirect:/stones/asynch";
+    }
+
 
 
     public String getLoggedUser() {  //metoda ktory hrac je prihlaseny

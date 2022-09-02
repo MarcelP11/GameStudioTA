@@ -166,6 +166,7 @@ public class Field {
         }
         if(isSolved()){
             this.state = GameState.SOLVED;
+            this.justFinished=true;
         }
     }
 
