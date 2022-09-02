@@ -98,13 +98,10 @@
         <h2>Average rating of this game is: <span style="color:blue" id="avgRating"></span></h2>
     </section>
 
-    <aside th:text="${message}"></aside>
-
-
-    <div th:text="${1+2}"></div>
-
-    <div th:text="${@minesweeperController.getCurrTime()}"></div>
+    <h3>Time:</h3>
     <div th:text="${@minesweeperController.currTime}"></div>
+
+
 
     <script type="text/javascript">
      const getJsonScoreUrl ="/api/score/Minesweeper";  //adresa pre json data so skore

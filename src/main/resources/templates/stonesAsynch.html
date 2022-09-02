@@ -97,13 +97,10 @@ To control use arrows on you keyboard.
         <h2>Average rating of this game is: <span style="color:blue" id="avgRating"></span></h2>
     </section>
 
-    <aside th:text="${message}"></aside>
-
-
-    <div th:text="${1+2}"></div>
-
-    <div th:text="${@minesweeperController.getCurrTime()}"></div>
+    <h3>Time:</h3>
     <div th:text="${@minesweeperController.currTime}"></div>
+
+
 
     <script type="text/javascript">
        const getJsonScoreUrl ="/api/score/Stones";  //adresa pre json data so skore
@@ -277,6 +274,7 @@ function fetchGameFieldAndRenderAll(getJsonUrl,viewElements) {
    //enabling(gameFieldData);  nechce to fungovat pretoze ak nie je prihlaseny tak nesu zobrazenem treba prerobit metodu
 
                 if(gameFieldData.justFinished){
+
 
                 fetchAndRenderBestScores(getJsonScoreUrl,viewElements);
                 }
