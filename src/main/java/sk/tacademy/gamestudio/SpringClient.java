@@ -18,7 +18,7 @@ import sk.tacademy.gamestudio.service.*;
 @ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "sk.tacademy.gamestudio.server.*"))
 public class SpringClient {
     public static void main(String[] args) {
-//        SpringApplication.run(SpringClient.class);   //povieme ze ideme spustat nieco cez Spring Framework teda triedu SpringClient
+    //    SpringApplication.run(SpringClient.class);   //povieme ze ideme spustat nieco cez Spring Framework teda triedu SpringClient
 
    new SpringApplicationBuilder(SpringClient.class).web(WebApplicationType.NONE).run(args);   //aby nespustal so spustenim hry aj server
     }
@@ -34,9 +34,14 @@ public class SpringClient {
     }
 
     //bean runnera pre kamene
-    @Bean
+    //@Bean
     public CommandLineRunner runner(sk.tacademy.gamestudio.stones.consoleui.ConsoleUI console){  //sluzi na to aby vytvoril objekt na spustenie konzoloveho rozhrania
         return s -> console.play();
+    }
+
+    @Bean
+    public CommandLineRunner runner(sk.tacademy.gamestudio.wordchain.consoleui.ConsoleUI console){
+        return s -> console.newGameStarted();
     }
 
 
@@ -53,6 +58,12 @@ public class SpringClient {
     @Bean
     public sk.tacademy.gamestudio.stones.consoleui.ConsoleUI consoleStones(){   //factory metoda ktora vytvara produkt resp komponenty
         return new sk.tacademy.gamestudio.stones.consoleui.ConsoleUI();
+    }
+
+    //bean koznoly pre wordchain
+    @Bean
+    public sk.tacademy.gamestudio.wordchain.consoleui.ConsoleUI consoleWordchain(){
+        return new sk.tacademy.gamestudio.wordchain.consoleui.ConsoleUI();
     }
 
     @Bean
@@ -98,6 +109,12 @@ public class SpringClient {
         return new CountryServiceJPA();
 //        return new CountryServiceREST();
 
+    }
+
+    @Bean
+    public WordService wordService(){
+        return new WordServiceJPA();
+        //return new WordServiceREST();
     }
 
     //spustame z triedy SpringClient. Inicializaciu v console UI sme zrusili resp zakomentovali a premenne dali na globalnu uroven

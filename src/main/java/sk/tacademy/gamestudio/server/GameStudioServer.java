@@ -53,6 +53,10 @@ public class GameStudioServer {
     public PlayerService playerService(){
         return new PlayerServiceJPA();
     }
+    @Bean
+    public WordService wordService(){
+        return new WordServiceJPA();
+    }
 
     //spustame z triedy SpringClient. Inicializaciu v console UI sme zrusili resp zakomentovali a premenne dali na globalnu uroven
 }
