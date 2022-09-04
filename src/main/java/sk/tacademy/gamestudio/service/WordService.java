@@ -12,5 +12,6 @@ public interface WordService {
 
     List<Words> getWords(int length);
     void addWord(Words word);
+    List<Words> getWordsByChar(int length, char character);
 
 }

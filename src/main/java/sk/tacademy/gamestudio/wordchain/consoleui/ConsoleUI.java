@@ -1,10 +1,7 @@
 package sk.tacademy.gamestudio.wordchain.consoleui;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import sk.tacademy.gamestudio.entity.Comment;
-import sk.tacademy.gamestudio.entity.Rating;
-import sk.tacademy.gamestudio.entity.Score;
-import sk.tacademy.gamestudio.entity.Words;
+import sk.tacademy.gamestudio.entity.*;
 import sk.tacademy.gamestudio.service.*;
 import sk.tacademy.gamestudio.wordchain.core.GameState;
 
@@ -25,6 +22,7 @@ public class ConsoleUI implements UserInterface {
     private int remainingAttempts = 5;
     private int correctCount = 0;
     private String word = "";
+    private char charAtEnd;
     @Autowired
     private ScoreService scoreService;   //nechavam na spring co je prenho vhodne
     @Autowired
@@ -58,8 +56,10 @@ public class ConsoleUI implements UserInterface {
 //wordService.addWord(new Words("skrt",4));
 
         generateFirstWord();    //do globalnej premennej ulozime hodnotu nahodneho slova s dlzkou 4 z databazy
-        System.out.println("generated word is" + word);
-        /*
+        System.out.println("generated word is " + word);
+        extractCharFromEnd();   //vyextrahujeme posledne pismeno zo slova ulozeneho v premennej word
+        System.out.println("last char from word is: "+charAtEnd);
+
         do {
             processInput(4);
             checkAttempts();
@@ -71,9 +71,12 @@ public class ConsoleUI implements UserInterface {
                 System.out.println(userName + " ,you lose!!!");  //ak prehra tak sa vypise tento text a vyskoci sa zo slucky
                 break;
             }
+
+            //ak bude slovo najdene v databaze a ak je spravne zadane tak sa vygeneruje nove slovo
+            //pridat metodu
         } while (true);
 
-        */
+
         Score player_score = new Score("Wordchain", userName, gameScore, new Date());  //vytvorenie noveho objektu score
         if (state != GameState.FAILED) {
             scoreService.addScore(player_score);  //ak hrac neprehral tak sa zapise skore do databazy
@@ -84,10 +87,20 @@ public class ConsoleUI implements UserInterface {
         processInputRate();  //pridanie a vypis ratingu
     }
 
-    public void update() {
+    public void generateNextWord() {
+        //vygenerovanie noveho slova na zaklade pismena
+        List<Words> words = wordService.getWordsByChar(4,charAtEnd);  //natiahneme si zoznam slov s dlzkou 4 znaky a konkretneho znaku
+        String generatedWord;   //inicializacia premennej ktoru budeme vracat
+        Random randomNumber = new Random();    //vytvorenie objektu nahodnenho cisla
+        int wRandom = randomNumber.nextInt(words.size());    //vygenerovanie nahodneho cisla z rozsahu 0 az do dlzky listu -1
+        word = words.get(wRandom).getWord();   //do premennej ulozime hodnotu zo zo stlpca word
     }
 
-    ;
+    public void update(){};
+public void extractCharFromEnd(){
+    String s = word;
+    charAtEnd=s.charAt(s.length()-1);
+}
 
     public void checkWordInDatabase(String word) {  //metoda ktora skontroluje ci je slovo v databaze a ak tak prida do countera +1 a vrati true alebo false
         if (isWordInDatabase(word) == true) {
@@ -120,17 +133,10 @@ public class ConsoleUI implements UserInterface {
 
     public void generateFirstWord() {
         List<Words> words = wordService.getWords(4);  //natiahneme si zoznam slov s dlzkou 4 znaky
-        for (int i = 0; i < words.size(); i++) {
-            System.out.printf("%-5d%s\n", i, words.get(i));
-
-        }
-        int plrNo = Integer.parseInt(readLine());
-        word=words.get(plrNo).getWord();
-
-//        String generatedWord;   //inicializacia premennej ktoru budeme vracat
-//        Random randomNumber = new Random();    //vytvorenie objektu nahodnenho cisla
-//        int wRandom = randomNumber.nextInt(words.size());    //vygenerovanie nahodneho cisla z rozsahu 0 az do dlzky listu -1
-//        word = words.get(wRandom).getWord();   //do premennej ulozime hodnotu zo zo stlpca word
+        String generatedWord;   //inicializacia premennej ktoru budeme vracat
+        Random randomNumber = new Random();    //vytvorenie objektu nahodnenho cisla
+        int wRandom = randomNumber.nextInt(words.size());    //vygenerovanie nahodneho cisla z rozsahu 0 az do dlzky listu -1
+        word = words.get(wRandom).getWord();   //do premennej ulozime hodnotu zo zo stlpca word
     }
 
     private void checkAttempts() {
@@ -167,12 +173,12 @@ public class ConsoleUI implements UserInterface {
     }
 
     void handleInput(String input, int wordLength) throws WrongFormatException {   //throws WrongFromatException znamena ze sa moze vyskytnut chyba ciza tato klasa
-        //Pattern pre slovo a pre spravnu dlzku slova
-        String regex = "([a-z]{" + wordLength + "})"; // vytvorenie premennej regexu so spravnou dlzkou slova
+        //Pattern pre slovo a pre spravnu dlzku slova a zaciatocneho pismena
+        String regex = "^["+charAtEnd+"]{1}([a-z]{" + (wordLength-1) + "})"; // vytvorenie premennej regexu so spravnou dlzkou slova a zaciatocnejo pismena
         Pattern patternWord = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcherWord = patternWord.matcher(input);
         if (matcherWord.matches()) {
-            int row = matcherWord.group(1).charAt(0) - 'a';
+            System.out.println("Correct input");
 //vlozit metodu ktora vykona nieco
         }
 

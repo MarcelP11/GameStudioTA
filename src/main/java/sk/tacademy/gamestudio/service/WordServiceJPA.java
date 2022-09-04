@@ -11,26 +11,35 @@ import java.util.List;
 @Transactional
 public class WordServiceJPA implements WordService {
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;   //nemoze byt private
 
     @Override
     public boolean getWord(String word) {   //metoda ktora bude vracat true alebo false ak je alebo nie je dane slovo v databaze
         if (entityManager
-                .createQuery("select w from Word w where w.word = :myWord")
+                .createQuery("select w from Words w where w.word = :myWord")
                 .setParameter("myWord", word)
                 .getSingleResult() == null) {
             return false;
         }
         return true;
     }
-
+@Override
     public List<Words> getWords(int length) {
         return entityManager
-                .createQuery("select w.word from Words w where w.length= :length")
+                .createQuery("select w from Words w where w.length= :length")
                 .setParameter("length", length)
                 .getResultList();
     }
 
+    @Override
+    public List<Words> getWordsByChar(int length, char character) {
+        return entityManager
+                .createQuery("select w from Words w where w.length= :length and w.word like ':char%'")
+                .setParameter("length", length)
+                .setParameter("char", character)
+                .getResultList();
+    }
+@Override
     public void addWord(Words word){
         entityManager.persist(word);
     };
